@@ -276,5 +276,14 @@ namespace Stratego
             initialGrid.mainGrid[p2.row, p2.col]._piece = null;
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
         }
+
+         private List<Piece> getAvailPieces(String playerName)
+              // takes in a string in order to determine which player's pieces to look at.
+              {
+                   if (playerName == "p1") {
+                        
+                   }
+
+              }
     }
 }

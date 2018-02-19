@@ -10,7 +10,7 @@ namespace Stratego
         private string _name;
         private SpaceType _playerType;
         private PlayerColor _playerColor;
-
+         
         public string name
         {
             get { return _name; }
