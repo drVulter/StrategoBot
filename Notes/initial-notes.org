@@ -1,0 +1,16 @@
+* Classes
+** Game
+*** Data
+- List<Piece> player1Pieces, player2Pieces
+- List<Piece> player1Pieces, player2Pieces
+- Grid initialGrid
+*** Methods
+**** Contructor
+***** initPlayerPieces(p1,p2)
+***** initGrid()
+**** initPlayerPieces(Players p1,p2)
+Makes a List of /Piece/ objects for each player and initializes it.
+**** initGrid()
+Makes a new Grid object 
+**** setPieceOnGrid(Piece, Position)
+puts a piece on the grid, but only if it is a gridspace the player is allowed to put a piece in, i.e. their side of the board.
