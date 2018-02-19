@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+// this is a test
 namespace Stratego
 {
     public class Game
