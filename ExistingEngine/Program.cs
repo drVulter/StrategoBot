@@ -55,5 +55,128 @@ namespace Stratego
             }
             //Console.ReadLine();
         }
+
+
+        //from here on down is the code added by Keller, copied from his TicTacToe AI
+        //I've done some initial Java to C# syntax changes, actually fully adapting this to what we need in Stratego is soon to come
+        private class Move
+        {
+            Position start;
+            Position end;
+            public int value;
+
+            Move(Position start, Position end, int value)
+            {
+                this.start = start;
+                this.end = end;
+                this.value = value;
+            }
+        }
+
+        private Move alphaBetaSearch(char[][] state)
+        {
+            int alpha = int.MinValue;
+            int beta = int.MaxValue;
+            List<Move> actions = actionsForMax(state, alpha, beta);
+            int bestMoveVal = int.MinValue;
+            int bestMoveIndex = 0;
+            for (int i = 0; i < actions.Count; i++)
+            {
+                if (actions[i].value > bestMoveVal)
+                {
+                    bestMoveVal = actions[i].value;
+                    bestMoveIndex = i;
+                }
+            }
+            return actions[bestMoveIndex];
+        }
+
+        private int maxValue(char[][] state, int alpha, int beta)
+        {
+            if (checkWin('O', state) == true)
+                return 1;
+            if (checkWin('X', state) == true)
+                return -1;
+            if (noMoreMoves(state) == true)
+                return 0;
+            int v = int.MinValue;
+            List<Move> actions = actionsForMax(state, alpha, beta);
+            for (int i = 0; i < actions.Count; i++)
+            {
+                if (v < actions[i].value)
+                    v = actions[i].value;
+                if (v >= beta)
+                    return v;
+                if (v > alpha)
+                    alpha = v;
+            }
+            return v;
+        }
+
+        private int minValue(char[][] state, int alpha, int beta)
+        {
+            if (checkWin('O', state) == true)
+                return 1;
+            if (checkWin('X', state) == true)
+                return -1;
+            if (noMoreMoves(state) == true)
+                return 0;
+            int v = int.MaxValue;
+            List<Move> actions = actionsForMin(state, alpha, beta);
+            for (int i = 0; i < actions.Count; i++)
+            {
+                if (actions[i].value < v)
+                    v = actions[i].value;
+                if (v <= alpha)
+                    return v;
+                if (v < beta)
+                    beta = v;
+            }
+            return v;
+        }
+
+        private List<Move> actionsForMax(char[][] state, int alpha, int beta)
+        {
+            List<Move> actions = new List<Move>();
+            for (int i = 0; i < boardSize; i++)
+            {
+                for (int j = 0; j < boardSize; j++)
+                {
+                    if (state[i][j] == ' ')
+                    {
+                        state[i][j] = 'O';
+
+                        int alphaNew = alpha;
+                        int betaNew = beta;
+
+                        Move move = new Move(i, j, minValue(state, alphaNew, betaNew));
+                        actions.Add(move);
+                        state[i][j] = ' ';
+                    }
+                }
+            }
+            return actions;
+        }
+
+        private List<Move> actionsForMin(char[][] state, int alpha, int beta)
+        {
+            List<Move> actions = new List<Move>();
+            for (int i = 0; i < boardSize; i++)
+            {
+                for (int j = 0; j < boardSize; j++)
+                {
+                    if (state[i][j] == ' ')
+                    {
+                        state[i][j] = 'X';
+                        int alphaNew = alpha;
+                        int betaNew = beta;
+                        Move move = new Move(i, j, maxValue(state, alphaNew, betaNew));
+                        actions.Add(move);
+                        state[i][j] = ' ';
+                    }
+                }
+            }
+            return actions;
+        }
     }
 }
