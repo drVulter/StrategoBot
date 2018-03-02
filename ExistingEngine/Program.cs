@@ -59,6 +59,25 @@ namespace Stratego
 
         //from here on down is the code added by Keller, copied from his TicTacToe AI
         //I've done some initial Java to C# syntax changes, actually fully adapting this to what we need in Stratego is soon to come
+
+        //we should probably move this to the Game class
+        bool checkWin(Player player, Game state){
+            if (player == p1){
+                for (int i = 0; i < state.player2Lost.Count; i++){
+                        if (state.player2Lost[i].pieceName == "Flag") return true;
+                }
+            }
+
+            if (player == p2){
+                for (int i = 0; i < state.player1Lost.Count; i++){
+                        if (state.player1Lost[i].pieceName == "Flag") return true;
+                }
+            }
+
+            return false;
+        }
+
+        //encapsulates the moves within a set of actions within a state
         private class Move
         {
             Position start;
@@ -73,11 +92,13 @@ namespace Stratego
             }
         }
 
-        private Move alphaBetaSearch(char[][] state)
+        //runs minimax search with alpha-beta pruning
+        private Move alphaBetaSearch(Game state, Player max, Player min, int depth)
         {
             int alpha = int.MinValue;
             int beta = int.MaxValue;
-            List<Move> actions = actionsForMax(state, alpha, beta);
+            int depthCurrent = 1;
+            List<Move> actions = actionsForMax(state, max, min, alpha, beta, depth, depthCurrent);
             int bestMoveVal = int.MinValue;
             int bestMoveIndex = 0;
             for (int i = 0; i < actions.Count; i++)
@@ -91,16 +112,18 @@ namespace Stratego
             return actions[bestMoveIndex];
         }
 
-        private int maxValue(char[][] state, int alpha, int beta)
+        private int maxValue(Game state, Player max, Player min, int alpha, int beta, int depthFinal, int depthCurrent)
         {
-            if (checkWin('O', state) == true)
-                return 1;
-            if (checkWin('X', state) == true)
-                return -1;
-            if (noMoreMoves(state) == true)
-                return 0;
+            if (checkWin(max, state) == true)
+                return int.maxValue;
+            if (checkWin(min, state) == true)
+                return int.minValue;
+            //saving this section for the heuristic value to be calculated and returned once we hit max search depth
+            if (depthFinal == depthCurrent)
+                return //heuristicValue(state,max);
+
             int v = int.MinValue;
-            List<Move> actions = actionsForMax(state, alpha, beta);
+            List<Move> actions = actionsForMax(state, max, min, ref alpha, ref beta, depthFinal, depthCurrent);
             for (int i = 0; i < actions.Count; i++)
             {
                 if (v < actions[i].value)
@@ -113,16 +136,17 @@ namespace Stratego
             return v;
         }
 
-        private int minValue(char[][] state, int alpha, int beta)
+        private int minValue(Game state, Player max, Player min, int alpha, int beta, int depthFinal, int depthCurrent)
         {
-            if (checkWin('O', state) == true)
-                return 1;
-            if (checkWin('X', state) == true)
-                return -1;
-            if (noMoreMoves(state) == true)
-                return 0;
+            if (checkWin(max, state) == true)
+                return int.maxValue;
+            if (checkWin(min, state) == true)
+                return int minValue;
+            if (depthFinal == depthCurrent)
+                return //heuristicValue(state,min);
+
             int v = int.MaxValue;
-            List<Move> actions = actionsForMin(state, alpha, beta);
+            List<Move> actions = actionsForMin(state, max, min, ref alpha, ref beta, depthFinal, depthCurrent);
             for (int i = 0; i < actions.Count; i++)
             {
                 if (actions[i].value < v)
@@ -135,48 +159,96 @@ namespace Stratego
             return v;
         }
 
-        private List<Move> actionsForMax(char[][] state, int alpha, int beta)
+        //this method returns a list of all the moves the max player can take given a particular game state
+        //the value of those moves involves the actions that the min player game take when given the new situation
+        //caused by max's actions, creating the recursive tree. It works by first finding all the valid pieces max
+        //can move, then finding all the places max can move those pieces to, and making a list of all the those
+        //begining-end moves. After attaining that information, that move is "simulated" in the newStateNode, and 
+        //that new state is passed into the minValue method, furthering the recursion to find the actual value of
+        //that potential game state. After the value of that state is determined, the move is undone so that the
+        //original game object is left the same as it was before the search
+        private List<Move> actionsForMax(Game state, Player max, Player min, int alpha, int beta, int depthCurrent, int DepthFinal)
         {
-            List<Move> actions = new List<Move>();
-            for (int i = 0; i < boardSize; i++)
-            {
-                for (int j = 0; j < boardSize; j++)
-                {
-                    if (state[i][j] == ' ')
-                    {
-                        state[i][j] = 'O';
 
-                        int alphaNew = alpha;
-                        int betaNew = beta;
-
-                        Move move = new Move(i, j, minValue(state, alphaNew, betaNew));
-                        actions.Add(move);
-                        state[i][j] = ' ';
+            List<> moves = new List<Move>();
+            //looks through all the positions on the board
+            for (int i = 0; i < 10; i++){
+                for (int j = 0; j < 10; j++){
+                    Position searchPos = new Position();
+                    searchPos.row = i;
+                    searchPos.col = j;
+                    
+                    //if this position holds a piece that is max's...
+                    if (state.initialGrid.GridSpace[i,j]._Piece._Player == max){//TODO: == is not defined for Player class
+                        int returncode;
+                        List<Position> posMoves = state.getMoves(searchPos, returncode);//let's see if it has some moves
+                        if (returncode == 1){//if it's max's piece and it can move...
+                            for (int k = 0; k < posMoves.Count; k++){
+                                Move move = new Move(searchPos,posMoves[k],null);//we don't know the value of these moves yet but we need them, so null value
+                                moves.Add(move);//add all those moves to the total list
+                            }
+                        }     
                     }
                 }
             }
-            return actions;
+
+            //now we're going to minmax all those new potential states that we'll be in
+            for (int i = 0; i < moves.Count; i++){
+                List<Move> actions = new List<Move>();
+                Game newStateNode = state;
+                newStateNode.movePiece(moves[i].start,moves[i].end);
+                int alphaNew = alpha;
+                int betaNew = beta;
+                depthCurrent++;
+                Move move = new Move(moves[i].start,moves[i].end,minValue(newStateNode, max, min, alphaNew, betaNew, depthCurrent, depthFinal));
+                actions.Add(move);
+                //revert all the changes
+                newStateNode.movePiece(moves[i].end,moves[i].start)
+                depthCurrent--;
+            }
+            return actions;            
         }
 
-        private List<Move> actionsForMin(char[][] state, int alpha, int beta)
+        //works the same as actionsForMax
+        private List<Move> actionsForMin(Game state, Player max, Player min, int alpha, int beta, int depthCurrent, int DepthFinal)
         {
-            List<Move> actions = new List<Move>();
-            for (int i = 0; i < boardSize; i++)
-            {
-                for (int j = 0; j < boardSize; j++)
-                {
-                    if (state[i][j] == ' ')
-                    {
-                        state[i][j] = 'X';
-                        int alphaNew = alpha;
-                        int betaNew = beta;
-                        Move move = new Move(i, j, maxValue(state, alphaNew, betaNew));
-                        actions.Add(move);
-                        state[i][j] = ' ';
+            List<> moves = new List<Move>();
+            //looks through all the positions on the board
+            for (int i = 0; i < 10; i++){
+                for (int j = 0; j < 10; j++){
+                    Position searchPos = new Position();
+                    searchPos.row = i;
+                    searchPos.col = j;
+                    
+                    //if this position holds a piece that is min's...
+                    if (state.initialGrid.GridSpace[i,j]._Piece._Player == min){//TODO: == is not defined for the class Player
+                        int returncode;
+                        List<Position> posMoves = state.getMoves(searchPos, returncode);//let's see if it has some moves
+                        if (returncode == 1){//if it's min's piece and it can move...
+                            for (int k = 0; k < posMoves.Count; k++){
+                                Move move = new Move(searchPos,posMoves[k],null);//we don't know the value of these moves yet but we need them, so null value
+                                moves.Add(move);//add all those moves to the total list
+                            }
+                        }     
                     }
                 }
             }
-            return actions;
+
+            //now we're going to minmax all those new potential states that we'll be in
+            for (int i = 0; i < moves.Count; i++){
+                List<Move> actions = new List<Move>();
+                Game newStateNode = state;
+                newStateNode.movePiece(moves[i].start,moves[i].end);
+                int alphaNew = alpha;
+                int betaNew = beta;
+                depthCurrent++;
+                Move move = new Move(moves[i].start,moves[i].end,maxValue(newStateNode, max, min, alphaNew, betaNew, depthCurrent, depthFinal));
+                actions.Add(move);
+                //revert all the changes
+                newStateNode.movePiece(moves[i].end,moves[i].start)
+                depthCurrent--;
+            }
+            return actions; 
         }
     }
 }
