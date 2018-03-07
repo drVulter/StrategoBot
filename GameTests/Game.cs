@@ -280,8 +280,12 @@ namespace Stratego
          private List<Piece> getAvailPieces(String playerName)
               // takes in a string in order to determine which player's pieces to look at.
               {
+                   List<Piece> availPieces = new List<Piece>();
                    if (playerName == "p1") {
-                        
+                        foreach (var p in player1Pieces) {
+                             if (p.)
+                             availPieces.add(p);
+                        } 
                    }
 
               }
