@@ -8,6 +8,12 @@ namespace Stratego
     public struct Position
     {
         private int _row,_col;
+        // Constructor
+        public Position(int r, int c)
+            {
+                this._row = r;
+                this._col = c;
+            }
         public int row 
         {   get
             {
