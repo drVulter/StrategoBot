@@ -28,7 +28,6 @@ namespace Stratego
             _name = name;
             _playerType = playerType;
             _playerColor = playerColor;
-            flagPos - null;
         }
     }
 
