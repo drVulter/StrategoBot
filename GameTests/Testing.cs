@@ -138,10 +138,12 @@ namespace Stratego
             double sum = 0.0;
             for (int i = 0; i < 12; i++) {
                 int difference;
+                // Negative because this is based on LOST PIECES
+                // positive difference means lost more, so BAD
                 if (playerA == p1) // MAX
-                    difference = p1Totals[i] - p2Totals[i];
+                    difference = -1 * (p1Totals[i] - p2Totals[i]);
                 else
-                    difference = p2Totals[i] - p1Totals[i];
+                    difference = -1 * (p2Totals[i] - p1Totals[i]);
                 sum += weights[i] * difference;
             }
             sum += distanceWeight * averageDistance(playerA, playerB);
