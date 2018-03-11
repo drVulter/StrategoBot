@@ -254,6 +254,10 @@ namespace Stratego
             }
             initialGrid.mainGrid[p2.row, p2.col]._piece = initialGrid.mainGrid[p1.row, p1.col]._piece;
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
+            // update space type!!!
+            initialGrid.mainGrid[p2.row, p2.col]._type = initialGrid.mainGrid[p1.row, p1.col]._type;
+            initialGrid.mainGrid[p1.row, p1.col]._type = SpaceType.Empty;
+
         }
         private void updateLoseGrid(Position p1, Position p2)
         {
@@ -265,6 +269,8 @@ namespace Stratego
                 default: break;
             }
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
+            // update space type!!!
+            initialGrid.mainGrid[p1.row, p1.col]._type = SpaceType.Empty;
         }
         private void updateTieGrid(Position p1, Position p2)
         {
@@ -277,6 +283,9 @@ namespace Stratego
             }
             initialGrid.mainGrid[p2.row, p2.col]._piece = null;
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
+            // update space types!!!
+            initialGrid.mainGrid[p2.row, p2.col]._type = SpaceType.Empty;
+            initialGrid.mainGrid[p1.row, p1.col]._type = SpaceType.Empty;
         }
     }
 }
