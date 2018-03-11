@@ -29,7 +29,7 @@ namespace Stratego
 
             plop.initialGrid.displayGrid();
 
-
+            
             for (int i = 1; i <8;i++ )
             {
                 Position nextPos = new Position();

@@ -56,6 +56,38 @@ namespace Stratego
         }
         public void displayGrid()
         {
+            for (int k = 0; k < 71; k++) {
+                    Console.Write("-");
+                }
+            Console.WriteLine();
+            for (int row = 0; row < gridSize; row++)
+            {
+                Console.Write("| ");
+                for (int col = 0; col < gridSize; col++)
+                {
+                    try { 
+                        //Console.Write((int)grid[row, col]._piece.pieceName + grid[row, col]._piece.piecePlayer.name + " ");
+                        Console.Write("{0,2}{1} ", (int)grid[row, col]._piece.pieceName, grid[row, col]._piece.piecePlayer.name);
+                        Console.Write("| ");
+                    }
+                    catch { 
+                        //Console.Write(grid[row, col]._type.ToString()[0] + " ");
+                        if (!grid[row,col]._isPlayable) // this is a lake space
+                            Console.Write("   X ");
+                        else
+                            Console.Write("{0,4} ", grid[row, col]._type.ToString()[0]);
+                        Console.Write("| ");
+                    };
+                }
+                Console.WriteLine();
+                for (int k = 0; k < 71; k++) {
+                    Console.Write("-");
+                }
+                Console.WriteLine();
+            }
+        /*
+        public void displayGrid()
+        {
             for (int k = 0; k < 41; k++) {
                     Console.Write("-");
                 }
@@ -80,6 +112,7 @@ namespace Stratego
                 }
                 Console.WriteLine();
             }
+            */
         }
     }
 }
