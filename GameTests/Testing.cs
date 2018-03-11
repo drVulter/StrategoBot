@@ -84,7 +84,7 @@ namespace Stratego
             double bomb = 20; // adjust
             double flag = 50; // adjust? should be arbitrarily high
 
-            double distanceWeight = 1.0;
+            double distanceWeight = 0.001; // what is good value for this?
             int[] p1Totals = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // total amount of each piece type lost
             int[] p2Totals = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
             int[] differences = new int[12];
@@ -146,10 +146,16 @@ namespace Stratego
                     difference = -1 * (p2Totals[i] - p1Totals[i]);
                 sum += weights[i] * difference;
             }
-            sum += distanceWeight * averageDistance(playerA, playerB);
+            // subtract because we want smaller average distance
+            //sum -= distanceWeight * averageDistance(playerA, playerB);
             // or do the difference? always the same???
             //Console.WriteLine(distanceWeight * (averageDistance(playerA, playerB) - averageDistance(playerB, playerA)));
-            //sum += distanceWeight * (averageDistance(playerA, playerB) - averageDistance(playerB, playerA));
+            //sum += distanceWeight * -1 * ((averageDistance(playerA, playerB) - averageDistance(playerB, playerA)));
+
+            // or do we use total distances?
+            //sum =+ distanceWeight * -1 * ((distanceMetric(playerA, playerB) - distanceMetric(playerB, playerA)));
+            sum -= distanceWeight * distanceMetric(playerA, playerB);
+ 
 
             
 
