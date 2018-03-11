@@ -279,7 +279,7 @@ namespace Stratego
                                               initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer));
                     break;
                 case SpaceType.Player2:
-                    player1Lost.Add(new Piece(initialGrid.mainGrid[p1.row,p1.col]._piece.pieceName,
+                    player2Lost.Add(new Piece(initialGrid.mainGrid[p1.row,p1.col]._piece.pieceName,
                                               initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer));
                     break;
                 default: break;
