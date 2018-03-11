@@ -43,11 +43,115 @@ namespace Stratego
                 pos1 = nextPos;
 
             }
+            Console.WriteLine("EvalPlayer1: {0}", eval(p1,p2));
+            Console.WriteLine("EvalPlayer2: {0}", eval(p2,p1));
+
             Console.WriteLine(plop.initialGrid.mainGrid[3,0]._type);
             Console.WriteLine(plop.initialGrid.mainGrid[4,0]._type);
+
             Console.WriteLine(distanceMetric(p2,p1));
             Console.WriteLine(averageDistance(p2,p1));
+            Console.WriteLine("Player 1 lost:");
+            foreach (var p in plop.player1Lost) {
+                p.displayPiece();
+            }
+            Console.WriteLine("Player 2 lost:");
+            foreach (var p in plop.player2Lost) {
+                p.displayPiece();
+            }
+            
             //Console.ReadLine();
+        }
+        static double eval(Player playerA, Player playerB)
+        {
+            /*
+              EVAL() function to estimate utility
+              weighted sum of differences between the amount of each piece possessed by each player,
+              and the difference between the average flag distance for each player.
+              +++ Assumes playerA is MAX +++
+             */
+            // First define weights
+            double marshal = 10;
+            double general = 9;
+            double colonel = 8;
+            double major = 7;
+            double captain = 6;
+            double lieutenant = 5;
+            double sergeant = 4;
+            double miner = 3; // Adjust?
+            double scout = 2;
+            double spy = 1; // adjust
+            double bomb = 20; // adjust
+            double flag = 50; // adjust? should be arbitrarily high
+
+            double distanceWeight = 1.0;
+            int[] p1Totals = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // total amount of each piece type lost
+            int[] p2Totals = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            int[] differences = new int[12];
+            double[] weights = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 20, 50}; // adjust these weights
+            int marshalDiff;
+            int generalDiff;
+            int colonelDiff;
+
+            List<List<Piece>> pieceLists = new List<List<Piece>>();
+            pieceLists.Add(plop.player1Lost);
+            pieceLists.Add(plop.player2Lost);
+            // count up totals
+            foreach (var pieces in pieceLists) {
+                int[] totals = new int[12];
+                foreach (var piece in pieces) {
+                    switch (piece.pieceName)
+                    {
+                    case piecesTypes.Marshal:
+                        totals[0]++; break;
+                    case piecesTypes.General:
+                        totals[1]++; break;
+                    case piecesTypes.Colonel:
+                        totals[2]++; break;
+                    case piecesTypes.Major:
+                        totals[3]++; break;
+                    case piecesTypes.Captain:
+                        totals[4]++; break;
+                    case piecesTypes.Lieutenant:
+                        totals[5]++; break;
+                    case piecesTypes.Sergeant:
+                        totals[6]++; break;
+                    case piecesTypes.Miner:
+                        totals[7]++; break;
+                    case piecesTypes.Scout:
+                        totals[8]++; break;
+                    case piecesTypes.Spy:
+                        totals[9]++; break;
+                    case piecesTypes.Bomb:
+                        totals[10]++; break;
+                    case piecesTypes.Flag:
+                        totals[11]++; break;
+                    }
+                    if (pieces == plop.player1Lost)
+                        p1Totals = totals;
+                    else
+                        p2Totals = totals;
+                }
+                
+            }
+
+            double sum = 0.0;
+            for (int i = 0; i < 12; i++) {
+                int difference;
+                if (playerA == p1) // MAX
+                    difference = p1Totals[i] - p2Totals[i];
+                else
+                    difference = p2Totals[i] - p1Totals[i];
+                sum += weights[i] * difference;
+            }
+            sum += distanceWeight * averageDistance(playerA, playerB);
+            // or do the difference? always the same???
+            //Console.WriteLine(distanceWeight * (averageDistance(playerA, playerB) - averageDistance(playerB, playerA)));
+            //sum += distanceWeight * (averageDistance(playerA, playerB) - averageDistance(playerB, playerA));
+
+            
+
+            return sum;
         }
         static double averageDistance(Player playerA, Player playerB)
         {
