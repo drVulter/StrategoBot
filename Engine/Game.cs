@@ -238,6 +238,10 @@ namespace Stratego
         {
             initialGrid.mainGrid[p2.row, p2.col]._piece = initialGrid.mainGrid[p1.row, p1.col]._piece;
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
+            // update player Type for grid spaces
+            initialGrid.mainGrid[p2.row, p2.col]._type = initialGrid.mainGrid[p1.row, p1.col]._type;
+            initialGrid.mainGrid[p1.row, p1.col]._type = SpaceType.Empty; // now empty
+            
         }
         private void updateWinGrid(Position p1, Position p2)
         {
