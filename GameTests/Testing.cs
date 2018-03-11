@@ -117,7 +117,6 @@ namespace Stratego
                     possibleBombs.RemoveAt(index); //  then remove that pos from the list of possibles
                 }
                 //Console.WriteLine("Done with first bombs...");
-                Console.WriteLine("plop.player2Pieces: {0}", plop.player2Pieces.Count);
                 int bombIndex = 34; // first bomb in list
                 foreach (var p in bombs) {
                     plop.setPieceOnGrid(plop.player2Pieces[bombIndex], p);
@@ -131,11 +130,8 @@ namespace Stratego
                     availableP2.RemoveAt(index);
                 }
                 //Console.WriteLine(availableP2.Count);
-                Console.WriteLine("Done with bombs...");
-                Console.WriteLine("Positions left: {0}", availableP2.Count);
 
                 // PLAYER 1 -----------------------------------------------------
-                Console.WriteLine("Player1");
                 numBombs = rnd.Next(2) + 2; // number of bombs for flag, 2 or 3
                 bombs = new List<Position>();
                 possibleBombs = new List<Position>();
@@ -162,14 +158,12 @@ namespace Stratego
                     availableP1.Remove(possibleBombs[index]);
                     possibleBombs.RemoveAt(index); //  then remove that pos from the list of possibles
                 }
-                Console.WriteLine("Done with first bombs...");
                 //Console.WriteLine("plop.player1Pieces: {0}", plop.player1Pieces.Count);
                 bombIndex = 34; // first bomb in list
                 foreach (var p in bombs) {
                     plop.setPieceOnGrid(plop.player1Pieces[bombIndex], p);
                     bombIndex++;
                 }
-                Console.WriteLine("Doing random bombs...");
                 // Place the rest of the bombs, go anywhere but row 1
                 for (int i = 0; i < (6 - numBombs); i++) {
                     index = rnd.Next(28 - numBombs);
@@ -177,8 +171,6 @@ namespace Stratego
                     availableP1.RemoveAt(index);
                 }
                 //Console.WriteLine(availableP1.Count);
-                Console.WriteLine("Done with bombs...");
-                Console.WriteLine("Positions left: {0}", availableP1.Count);
 
             List<List<Piece>> playerPieceLists = new List<List<Piece>>();
             playerPieceLists.Add(plop.player1Pieces);
@@ -190,7 +182,6 @@ namespace Stratego
                 } else {
                     available = availableP2;
                 }
-                Console.WriteLine("number of spots left: {0}", available.Count);
                 /* Now for SCOUTS, playerXPieces[26 - 33]*/
                 int scoutIndex = 26; // first scout in list
                 int count = 20;
@@ -201,8 +192,6 @@ namespace Stratego
                     scoutIndex++;
                     count--;
                 }
-                Console.WriteLine("Done with SCOUTS");
-                Console.WriteLine(available.Count);
                 
                 /* Now for MINERS, playerXPieces[21-]
                    could be 10 spots left in first row
@@ -216,8 +205,6 @@ namespace Stratego
                     minerIndex++;
                     //count--;
                 }
-                Console.WriteLine("Done with Miners");
-                Console.WriteLine(available.Count);
                 /* Now do the rest of the pieces, should be RANDOM! */
                 for (int i = 0; i < 21; i++) {
                     if (i != 3) {
