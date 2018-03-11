@@ -46,7 +46,35 @@ namespace Stratego
             Console.WriteLine(plop.initialGrid.mainGrid[3,0]._type);
             Console.WriteLine(plop.initialGrid.mainGrid[4,0]._type);
             Console.WriteLine(distanceMetric(p2,p1));
+            Console.WriteLine(averageDistance(p2,p1));
             //Console.ReadLine();
+        }
+        static double averageDistance(Player playerA, Player playerB)
+        {
+            /*
+              Average Manhattan Distance of all pieces belonging to playerA to playerB's flag
+            */
+            SpaceType player;
+            if (playerA == p1) {
+                player = SpaceType.Player1;
+            } else {
+                player = SpaceType.Player2;
+            }
+            int total = 0; // total of all distances
+            int count = 0; // number of pieces being considered
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    if (plop.initialGrid.mainGrid[i,j]._type == player) {
+                        // need to make sure we only consider pieces that can move/capture the flag
+                        if (!((plop.initialGrid.mainGrid[i,j]._piece.pieceName == piecesTypes.Bomb) ||
+                              (plop.initialGrid.mainGrid[i,j]._piece.pieceName == piecesTypes.Flag))) {
+                            total += distance(i, j, playerB.flagPos.row, playerB.flagPos.col);
+                            count++;
+                        }
+                    }
+                }
+            }
+            return total / count; // return the average
         }
         
         static int distanceMetric(Player playerA, Player playerB)
@@ -54,16 +82,13 @@ namespace Stratego
             /*
               sums up Manhattan distances of each players pieces to opposing player's flag
             */
-            List<Piece> pieces;
             SpaceType player;
             if (playerA == p1) {
-                pieces = plop.player1Pieces;
                 player = SpaceType.Player1;
             } else {
-                pieces = plop.player2Pieces;
                 player = SpaceType.Player2;
             }
-            int total = 0;
+            int total = 0; // total of all distances
             for (int i = 0; i < 10; i++) {
                 for (int j = 0; j < 10; j++) {
                     if (plop.initialGrid.mainGrid[i,j]._type == player) {
