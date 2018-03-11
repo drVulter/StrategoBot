@@ -17,12 +17,10 @@ namespace Stratego
             // start the game
             plop.start();
             plop.initialGrid.displayGrid();
+            Console.WriteLine(distanceMetric(p2,p1));
 
-
-
-            /*
-            for (int i = 1; i <8;i++ )
-            {
+            Position pos1 = new Position(3, 0);
+            for (int i = 0; i < 3; i++) {
                 Position nextPos = new Position();
                 nextPos.row = pos1.row+1;
                 nextPos.col = pos1.col;
@@ -41,14 +39,55 @@ namespace Stratego
                     default: Console.WriteLine("Move not allowed !");
                         break;
                 }
-                pos1.row++;
                 plop.initialGrid.displayGrid();
-            }
+                pos1 = nextPos;
 
-            */
+            }
+            Console.WriteLine(plop.initialGrid.mainGrid[3,0]._type);
+            Console.WriteLine(plop.initialGrid.mainGrid[4,0]._type);
+            Console.WriteLine(distanceMetric(p2,p1));
             //Console.ReadLine();
         }
-
+        
+        static int distanceMetric(Player playerA, Player playerB)
+        {
+            /*
+              sums up Manhattan distances of each players pieces to opposing player's flag
+            */
+            List<Piece> pieces;
+            SpaceType player;
+            if (playerA == p1) {
+                pieces = plop.player1Pieces;
+                player = SpaceType.Player1;
+            } else {
+                pieces = plop.player2Pieces;
+                player = SpaceType.Player2;
+            }
+            int total = 0;
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    if (plop.initialGrid.mainGrid[i,j]._type == player) {
+                        // need to make sure we only consider pieces that can move/capture the flag
+                        if (!((plop.initialGrid.mainGrid[i,j]._piece.pieceName == piecesTypes.Bomb) ||
+                              (plop.initialGrid.mainGrid[i,j]._piece.pieceName == piecesTypes.Flag))) {
+                            total += distance(i, j, playerB.flagPos.row, playerB.flagPos.col);
+                            
+                        }
+                    }
+                }
+            }
+            return total;
+        }
+        static int distance(int x1, int y1, int x2, int y2)
+        {
+            return Math.Abs(x1 - x2) + Math.Abs(y1 - y2);
+        }
+        /*
+        static int distance(Position pos1, Position pos2)
+        {
+            return Math.Abs(pos1.row - pos2.row) + Math.Abs(pos1.col - pos2.col);
+        }
+        */
         static void setUpBoard()
         {
             /* Initial Set up
@@ -77,6 +116,7 @@ namespace Stratego
             //Position flag2Pos = new Position();
             int flag2Index = rnd.Next(19);
             Position flag2Pos = availableP2[flag2Index];
+            p2.flagPos = flag2Pos; // SETTING FOR THE PLAYER
             //flag2Pos.row = flag2Index / 10;
             //flag2Pos.col = flag2Index % 10;
             plop.setPieceOnGrid(plop.player2Pieces[3], flag2Pos);
@@ -84,6 +124,7 @@ namespace Stratego
             //Position flag1Pos = new Position();
             int flag1Index = rnd.Next(19);
             Position flag1Pos = availableP1[flag1Index];
+            p1.flagPos = flag1Pos; // SETTING FOR THE PLAYER!!!!!
             //flag1Pos.row = flag1Index / 10;
             //flag1Pos.col = flag1Index % 10;
             plop.setPieceOnGrid(plop.player1Pieces[3], flag1Pos);
