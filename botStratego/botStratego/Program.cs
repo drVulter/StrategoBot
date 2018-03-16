@@ -80,11 +80,11 @@ namespace Stratego
         //runs minimax search with alpha-beta pruning
         private Move alphaBetaSearch(Game state, Player max, Player min, int depth)
         {
-            int alpha = int.MinValue;
-            int beta = int.MaxValue;
+            double alpha = double.MinValue;
+            double beta = double.MaxValue;
             int depthCurrent = 1;
             List<Move> actions = actionsForMax(state, max, min, alpha, beta, depth, depthCurrent);
-            int bestMoveVal = int.MinValue;
+            double bestMoveVal = double.MinValue;
             int bestMoveIndex = 0;
             for (int i = 0; i < actions.Count; i++)
             {
@@ -97,19 +97,19 @@ namespace Stratego
             return actions[bestMoveIndex];
         }
 
-        private int maxValue(Game state, Player max, Player min, int alpha, int beta, int depthFinal, int depthCurrent)
+        private double maxValue(Game state, Player max, Player min, double alpha, double beta, int depthFinal, int depthCurrent)
         {
             Game plop = new Game(max, min);
             if (plop.checkWin(max, state) == true)
-                return int.MaxValue;
+                return double.MaxValue;
             if (plop.checkWin(min, state) == true)
-                return int.MinValue;
+                return double.MinValue;
             //saving this section for the heuristic value to be calculated and returned once we hit max search depth
             if (depthFinal == depthCurrent)
-                return; //heuristicValue(state,max);
+                return 1; //heuristicValue(state,max);
 
-            int v = int.MinValue;
-            List<Move> actions = actionsForMax(state, max, min, alpha, beta, depthFinal, depthCurrent);
+            double v = double.MinValue;
+            List<Move> actions = actionsForMax(state, max, min, (double)alpha, beta, depthFinal, depthCurrent);
             for (int i = 0; i < actions.Count; i++)
             {
                 if (v < actions[i].value)
@@ -122,7 +122,7 @@ namespace Stratego
             return v;
         }
 
-        private int minValue(Game state, Player max, Player min, int alpha, int beta, int depthFinal, int depthCurrent)
+        private int minValue(Game state, Player max, Player min, double alpha, double beta, int depthFinal, int depthCurrent)
         {
             Game plop = new Game(min, max);
             if (plop.checkWin(max, state) == true)
@@ -154,7 +154,7 @@ namespace Stratego
         //that new state is passed into the minValue method, furthering the recursion to find the actual value of
         //that potential game state. After the value of that state is determined, the move is undone so that the
         //original game object is left the same as it was before the search
-        private List<Move> actionsForMax(Game state, Player max, Player min, int alpha, int beta, int depthCurrent, int DepthFinal)
+        private List<Move> actionsForMax(Game state, Player max, Player min, double alpha, double beta, int depthCurrent, int DepthFinal)
         {
 
             List<Move> moves = new List<Move>();
