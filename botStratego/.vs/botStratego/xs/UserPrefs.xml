@@ -1,0 +1,18 @@
+﻿<Properties StartupConfiguration="{A467DF4E-41EB-48CE-AC38-6F441A2210E1}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="botStratego/Piece.cs">
+    <Files>
+      <File FileName="botStratego/Program.cs" Line="109" Column="17" />
+      <File FileName="botStratego/Game.cs" Line="69" Column="27" />
+      <File FileName="botStratego/Position.cs" Line="1" Column="1" />
+      <File FileName="botStratego/Grid.cs" Line="11" Column="15" />
+      <File FileName="botStratego/Piece.cs" Line="6" Column="7" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.botStratego PreferredExecutionTarget="MonoDevelop.Default" />
+  <MultiItemStartupConfigurations />
+</Properties>
