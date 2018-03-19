@@ -10,7 +10,7 @@ namespace Stratego
         private string _name;
         private SpaceType _playerType;
         private PlayerColor _playerColor;
-
+        public Position flagPos; // location of FLAG
         public string name
         {
             get { return _name; }
@@ -23,7 +23,7 @@ namespace Stratego
         {
             get { return _playerColor; }
         }
-        public Player(string name,SpaceType playerType,PlayerColor playerColor)
+        public Player(string name, SpaceType playerType, PlayerColor playerColor)
         {
             _name = name;
             _playerType = playerType;
@@ -31,5 +31,5 @@ namespace Stratego
         }
     }
 
-    public enum PlayerColor { Red=1,Blue=2}
+    public enum PlayerColor { Red = 1, Blue = 2 }
 }

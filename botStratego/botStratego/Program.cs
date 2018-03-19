@@ -122,13 +122,13 @@ namespace Stratego
             return v;
         }
 
-        private int minValue(Game state, Player max, Player min, double alpha, double beta, int depthFinal, int depthCurrent)
+        private double minValue(Game state, Player max, Player min, double alpha, double beta, int depthFinal, int depthCurrent)
         {
             Game plop = new Game(min, max);
             if (plop.checkWin(max, state) == true)
-                return int.MaxValue;
+                return double.MaxValue;
             if (plop.checkWin(min, state) == true)
-                return int.MinValue;
+                return double.MinValue;
             if (depthFinal == depthCurrent)
                 return; //evaluation function goes here
 
@@ -185,8 +185,8 @@ namespace Stratego
                 List<Move> actions = new List<Move>();
                 Game newStateNode = state;
                 newStateNode.movePiece(moves[i].start,moves[i].end);
-                int alphaNew = alpha;
-                int betaNew = beta;
+                double alphaNew = alpha;
+                double betaNew = beta;
                 depthCurrent++;
                 Move move = new Move(moves[i].start,moves[i].end,minValue(newStateNode, max, min, alphaNew, betaNew, depthCurrent, depthFinal));
                 actions.Add(move);
@@ -198,7 +198,7 @@ namespace Stratego
         }
 
         //works the same as actionsForMax
-        private List<Move> actionsForMin(Game state, Player max, Player min, int alpha, int beta, int depthCurrent, int DepthFinal)
+        private List<Move> actionsForMin(Game state, Player max, Player min, double alpha, double beta, int depthCurrent, int DepthFinal)
         {
             List<Move> moves = new List<Move>();
             //looks through all the positions on the board
@@ -209,12 +209,13 @@ namespace Stratego
                     searchPos.col = j;
                     
                     //if this position holds a piece that is min's...
-                    if (state.initialGrid.GridSpace[i,j]._Piece._Player == min){//TODO: == is not defined for the class Player
+                    if (state.initialGrid.grid[i,j]._piece.piecePlayer == min){//TODO: == is not defined for the class Player
                         int returncode;
                         List<Position> posMoves = state.getMoves(searchPos, out returncode);//let's see if it has some moves
                         if (returncode == 1){//if it's min's piece and it can move...
                             for (int k = 0; k < posMoves.Count; k++){
-                                Move move = new Move(searchPos,posMoves[k],null);//we don't know the value of these moves yet but we need them, so null value
+                                int z = 0;
+                                Move move = new Move(searchPos,posMoves[k],z);//we don't know the value of these moves yet but we need them, so null value
                                 moves.Add(move);//add all those moves to the total list
                             }
                         }     
@@ -227,8 +228,8 @@ namespace Stratego
                 List<Move> actions = new List<Move>();
                 Game newStateNode = state;
                 newStateNode.movePiece(moves[i].start,moves[i].end);
-                int alphaNew = alpha;
-                int betaNew = beta;
+                double alphaNew = alpha;
+                double betaNew = beta;
                 depthCurrent++;
                 Move move = new Move(moves[i].start,moves[i].end,maxValue(newStateNode, max, min, alphaNew, betaNew, depthCurrent, depthFinal));
                 actions.Add(move);

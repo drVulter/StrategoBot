@@ -7,7 +7,7 @@ namespace Stratego
 {
     public struct Position
     {
-        private int _row,_col;
+        public int _row,_col;
         public int row 
         {   get
             {
@@ -32,6 +32,13 @@ namespace Stratego
                 if (value > 9) this._col = 9;
                 if (value < 0) this._col = 0;
             }
+        }
+
+        public Position (int row, int col){
+            //Use of possibly unassigned field error
+            int row = _row;
+            int col = _col;
+            
         }
 
         public static  bool operator ==(Position p1, Position p2)
