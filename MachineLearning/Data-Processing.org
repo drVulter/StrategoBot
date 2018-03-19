@@ -11,20 +11,39 @@ Do calculations in terms of *MAX*, so return probability that *MAX* wins. So the
 |               |            |           |          |     |        |
 
 Should we export a data point (row) for each move in each game played? or only export a sampling?
+* Decisions to make
+** Exporting
+- How should we export the data? I was thinking just csv or txt file (see [5]) but would this be too inefficient?
+- Should we consider flag difference the same as any piece? Or should it somehow be given /instant win/ status in the eval function?
 ** Sampling
 Options:
 1. At an interval? e.g. every 4th
 2. after a certain number of moves
-  - First several will tend to be (0, 0, ..., T/F) which might not be useful
 3. Every single move 
 4. After each combat instance (as in [1])
+Considerations
+- First several will tend to be (0, 0, ..., T/F) which might not be useful
 ** Format
 Since we are dealing with simple tuples, csv should be fine
-* Scripts
+** Piece anchoring
+In chess examples, the value of a pawn is fixed at 1 so that every other piece's value is in terms of a pawn. 
+- Is this necessary for us? and if so...
+- Which piece do we anchor? Does it make a difference?
+** Initial Evaluation Function
+This will make a big difference in terms of the data that we will have to work with.
+Do we need it to be normalized between 0 and 1? The function post ML will be so I think this makes sense.
+* Tools
 ** Python
 *** Libraries
 - Numpy
 - Scikit Learn - has Logistic regression built in 
+*** Advantages
+We all seem to have some experience with it
+** Weka
+** R
 * Sources/Links
 1. https://chessprogramming.wikispaces.com/Point%20Value%20by%20Regression%20Analysis
 2. https://en.wikipedia.org/wiki/Logistic_function
+3. https://en.wikipedia.org/wiki/Logistic_regression
+4. https://www.r-bloggers.com/big-data-and-chess-what-are-the-predictive-point-values-of-chess-pieces/
+5. Data as txt file? https://stackoverflow.com/questions/11023411/how-to-import-csv-data-file-into-scikit-learn
