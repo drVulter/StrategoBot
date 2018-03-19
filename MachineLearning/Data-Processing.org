@@ -2,6 +2,8 @@
 - Result is binary (win/loss)
   - throw out draws
 - Estimates probability of win/loss (stays between 0-1)
+** Connection to minimax
+Do calculations in terms of *MAX*, so return probability that *MAX* wins. So the function should return $P(Max)$ at a terminal state for *MAX* and $1 - P(Max)$ at a terminal state for *MIN*.
 * Data Export
 - At a given move, difference in each piece and what the game ended up in 
 | Marshall Diff | Miner Diff | Bomb Diff | Spy Diff | ... | P1 Win |
@@ -10,11 +12,12 @@
 
 Should we export a data point (row) for each move in each game played? or only export a sampling?
 ** Sampling
-Three options:
+Options:
 1. At an interval? e.g. every 4th
 2. after a certain number of moves
   - First several will tend to be (0, 0, ..., T/F) which might not be useful
 3. Every single move 
+4. After each combat instance (as in [1])
 ** Format
 Since we are dealing with simple tuples, csv should be fine
 * Scripts
@@ -22,3 +25,6 @@ Since we are dealing with simple tuples, csv should be fine
 *** Libraries
 - Numpy
 - Scikit Learn - has Logistic regression built in 
+* Sources/Links
+1. https://chessprogramming.wikispaces.com/Point%20Value%20by%20Regression%20Analysis
+2. https://en.wikipedia.org/wiki/Logistic_function
