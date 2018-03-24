@@ -1,0 +1,1 @@
+/Users/Julian/Documents/Artificial Intelligence/StrategoBot/botStratego/botStratego/obj/x86/Debug/botStratego.csproj.CoreCompileInputs.cache
