@@ -70,7 +70,8 @@ namespace Stratego
         //we should probably move this to the Game class
         public bool checkWin(Player player, Game state)
         {
-            if (player == p1)
+            string name = player.name;
+            if (name.Equals("Max"))
             {
                 for (int i = 0; i < state.player2Lost.Count; i++)
                 {
@@ -78,7 +79,7 @@ namespace Stratego
                 }
             }
 
-            if (player == p2)
+            if (name.Equals("Min"))
             {
                 for (int i = 0; i < state.player1Lost.Count; i++)
                 {
@@ -299,6 +300,7 @@ initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer));
                 default: break;
             }
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
+            initialGrid.mainGrid[p1.row, p1.col]._type = SpaceType.Empty;
         }
         private void updateTieGrid(Position p1, Position p2)
         {
@@ -321,6 +323,9 @@ initialGrid.mainGrid[p2.row, p2.col]._piece.piecePlayer));
             }
             initialGrid.mainGrid[p2.row, p2.col]._piece = null;
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
+
+            initialGrid.mainGrid[p2.row, p2.col]._type = SpaceType.Empty;
+            initialGrid.mainGrid[p1.row, p1.col]._type = SpaceType.Empty;
         }
     }
 }
