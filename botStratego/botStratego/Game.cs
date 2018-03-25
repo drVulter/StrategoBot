@@ -21,6 +21,10 @@ namespace Stratego
             player1Pieces = new List<Piece>();
             player2Pieces = new List<Piece>();
 
+
+            player1Lost = new List<Piece>();
+            player2Lost = new List<Piece>();
+
             player1Pieces.Add(new Piece(piecesTypes.Marshal,p1));
             player1Pieces.Add(new Piece(piecesTypes.General, p1));
             player1Pieces.Add(new Piece(piecesTypes.Spy, p1));
@@ -267,20 +271,31 @@ namespace Stratego
             //add piece to lost pieces
             switch(initialGrid.mainGrid[p2.row, p2.col]._piece.piecePlayer.playerType)
             {
-                case SpaceType.Player1: break;
-                case SpaceType.Player2: break;
+                case SpaceType.Player1: player1Lost.Add(new Piece(initialGrid.mainGrid[p2.row, p2.col]._piece.pieceName,
+initialGrid.mainGrid[p2.row, p2.col]._piece.piecePlayer));break;
+                case SpaceType.Player2: player2Lost.Add(new Piece(initialGrid.mainGrid[p2.row, p2.col]._piece.pieceName,
+initialGrid.mainGrid[p2.row, p2.col]._piece.piecePlayer));break;
                 default: break;
             }
             initialGrid.mainGrid[p2.row, p2.col]._piece = initialGrid.mainGrid[p1.row, p1.col]._piece;
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
+
+            initialGrid.mainGrid[p2.row, p2.col]._type = initialGrid.mainGrid[p1.row, p1.col]._type;
+            initialGrid.mainGrid[p1.row, p1.col]._type = SpaceType.Empty;
         }
         private void updateLoseGrid(Position p1, Position p2)
         {
             //add piece to lost pieces
             switch (initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer.playerType)
             {
-                case SpaceType.Player1: break;
-                case SpaceType.Player2: break;
+                case SpaceType.Player1:
+                player1Lost.Add(new Piece(initialGrid.mainGrid[p1.row, p1.col]._piece.pieceName,
+initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer)); 
+                    break;
+                case SpaceType.Player2:
+                    player2Lost.Add(new Piece(initialGrid.mainGrid[p1.row, p1.col]._piece.pieceName,
+initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer));
+                    break;
                 default: break;
             }
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
@@ -290,8 +305,18 @@ namespace Stratego
             //add piece to lost pieces
             switch (initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer.playerType)
             {
-                case SpaceType.Player1: break;
-                case SpaceType.Player2: break;
+                case SpaceType.Player1: 
+                    player1Lost.Add(new Piece(initialGrid.mainGrid[p1.row, p1.col]._piece.pieceName,
+                                              initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer));
+                    player2Lost.Add(new Piece(initialGrid.mainGrid[p2.row, p2.col]._piece.pieceName,
+initialGrid.mainGrid[p2.row, p2.col]._piece.piecePlayer));
+                    break;
+                case SpaceType.Player2: 
+                    player2Lost.Add(new Piece(initialGrid.mainGrid[p1.row, p1.col]._piece.pieceName,
+                                              initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer));
+                    player1Lost.Add(new Piece(initialGrid.mainGrid[p2.row, p2.col]._piece.pieceName,
+initialGrid.mainGrid[p2.row, p2.col]._piece.piecePlayer));
+                    break;
                 default: break;
             }
             initialGrid.mainGrid[p2.row, p2.col]._piece = null;

@@ -7,73 +7,9 @@ namespace Stratego
 {
     class Eval
     {
-        //We could probably get rid of lines 11 through 74 as theyre already called in the Program File
-        static Player p1 = new Player("P1", SpaceType.Player1, PlayerColor.Red);
-        static Player p2 = new Player("P2", SpaceType.Player2, PlayerColor.Blue);
-        static Game plop = new Game(p1, p2);
-        static void Main(string[] args)
-        {
-
-            setUpBoard();
-            // start the game
-            plop.start();
-            plop.initialGrid.displayGrid();
-            Console.WriteLine(distanceMetric(p2, p1));
-
-            Position pos1 = new Position(3, 0);
-            for (int i = 0; i < 3; i++)
-            {
-                Position nextPos = new Position();
-                nextPos.row = pos1.row + 1;
-                nextPos.col = pos1.col;
-                switch (plop.movePiece(pos1, nextPos))
-                {
-                    case 1:
-                        Console.WriteLine("Piece MOVED !");
-                        break;
-                    case 10:
-                        Console.WriteLine("WIN !!!");
-                        break;
-                    case 20:
-                        Console.WriteLine("TIE !");
-                        break;
-                    case 30:
-                        Console.WriteLine("LOST !!!");
-                        break;
-                    case 50:
-                        Console.WriteLine("You found the flag !");
-                        break;
-                    default:
-                        Console.WriteLine("Move not allowed !");
-                        break;
-                }
-                plop.initialGrid.displayGrid();
-                pos1 = nextPos;
-
-            }
-            Console.WriteLine("EvalPlayer1: {0}", eval(p1, p2));
-            Console.WriteLine("EvalPlayer2: {0}", eval(p2, p1));
-
-            Console.WriteLine(plop.initialGrid.mainGrid[3, 0]._type);
-            Console.WriteLine(plop.initialGrid.mainGrid[4, 0]._type);
-
-            Console.WriteLine(distanceMetric(p2, p1));
-            Console.WriteLine(averageDistance(p2, p1));
-            Console.WriteLine("Player 1 lost:");
-            foreach (var p in plop.player1Lost)
-            {
-                p.displayPiece();
-            }
-            Console.WriteLine("Player 2 lost:");
-            foreach (var p in plop.player2Lost)
-            {
-                p.displayPiece();
-            }
-
-            //Console.ReadLine();
-        }
         static double eval(Player playerA, Player playerB)
         {
+            Game plop = new Game(playerA, playerB);
             /*
               EVAL() function to estimate utility
               weighted sum of differences between the amount of each piece possessed by each player,
@@ -105,6 +41,8 @@ namespace Stratego
             int colonelDiff;
 
             List<List<Piece>> pieceLists = new List<List<Piece>>();
+            //player1/2Lost class doesnt exist
+            //need to either make, or get that information somehow
             pieceLists.Add(plop.player1Lost);
             pieceLists.Add(plop.player2Lost);
             // count up totals
@@ -180,8 +118,9 @@ namespace Stratego
             /*
               Average Manhattan Distance of all pieces belonging to playerA to playerB's flag
             */
+            Game plop = new Game(playerA, playerB);
             SpaceType player;
-            if (playerA == p1)
+            if (Player == playerA)
             {
                 player = SpaceType.Player1;
             }

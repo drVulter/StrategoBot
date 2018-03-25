@@ -131,6 +131,8 @@ namespace Stratego
                 return double.MinValue;
             if (depthFinal == depthCurrent)
                 return; //evaluation function goes here
+            //I am not sure where we would call the Eval class
+
 
             double v = double.MaxValue;
             List<Move> actions = actionsForMin(state, max, min, alpha, beta, depthFinal, depthCurrent);
