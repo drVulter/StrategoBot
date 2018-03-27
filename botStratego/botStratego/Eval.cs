@@ -7,7 +7,7 @@ namespace Stratego
 {
     class Eval
     {
-        public static double eval(Player playerA, Player playerB, Game plop)
+        public static double evaluate(Player playerA, Player playerB, Game plop)
         {
             /*
               EVAL() function to estimate utility

@@ -131,9 +131,11 @@ namespace Stratego
                 return double.MinValue;
             if (depthFinal == depthCurrent)
             {
+                Eval evaluate = new Eval();
+                double evaluation = Eval.evaluate(max, min, state);
                 //create eval object
                 //call functions, make it run return the value gotten
-                return; //evaluation function goes here
+                return evaluation; //evaluation function goes here
                         //I am not sure where we would call the Eval class
             }
 
@@ -278,6 +280,7 @@ namespace Stratego
             //Position flag2Pos = new Position();
             int flag2Index = rnd.Next(19);
             Position flag2Pos = availableP2[flag2Index];
+            //
             p2.flagPos = flag2Pos; // SETTING FOR THE PLAYER
             //flag2Pos.row = flag2Index / 10;
             //flag2Pos.col = flag2Index % 10;
@@ -286,6 +289,7 @@ namespace Stratego
             //Position flag1Pos = new Position();
             int flag1Index = rnd.Next(19);
             Position flag1Pos = availableP1[flag1Index];
+            //
             p1.flagPos = flag1Pos; // SETTING FOR THE PLAYER!!!!!
             //flag1Pos.row = flag1Index / 10;
             //flag1Pos.col = flag1Index % 10;
