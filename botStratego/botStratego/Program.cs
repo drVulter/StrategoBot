@@ -14,8 +14,8 @@ namespace Stratego
             Player p2 = new Player("Min", SpaceType.Player2, PlayerColor.Blue);
             Game plop = new Game(p1,p2);
 
-
-            Position pos1 = new Position();
+            //This is the Auto-run stuff
+            /*Position pos1 = new Position();
             pos1.row = 3;
             pos1.col = 4;
 
@@ -52,8 +52,8 @@ namespace Stratego
                         break;
                 }
                 pos1.row++;
-                plop.initialGrid.displayGrid();
-            }
+                plop.initialGrid.displayGrid();*/
+            //}
             //Console.ReadLine();
         }
 
@@ -233,8 +233,10 @@ namespace Stratego
             }
 
             //now we're going to minmax all those new potential states that we'll be in
+            List<Move> actions = new List<Move>();
             for (int i = 0; i < moves.Count; i++){
-                List<Move> actions = new List<Move>();
+                //with actions in for loop get "The name 'actions' does not exist in the current context
+
                 Game newStateNode = state;
                 newStateNode.movePiece(moves[i].start,moves[i].end);
                 double alphaNew = alpha;
@@ -249,7 +251,7 @@ namespace Stratego
             return actions; 
         }
 
-        static void setUpBoard(Game plop)
+        public static void setUpBoard(Game plop, Player p1, Player p2)
         {
             /* Initial Set up
                1. FLAG: goes in back two rows
@@ -280,7 +282,7 @@ namespace Stratego
             //Position flag2Pos = new Position();
             int flag2Index = rnd.Next(19);
             Position flag2Pos = availableP2[flag2Index];
-            //
+
             p2.flagPos = flag2Pos; // SETTING FOR THE PLAYER
             //flag2Pos.row = flag2Index / 10;
             //flag2Pos.col = flag2Index % 10;

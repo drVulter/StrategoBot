@@ -13,7 +13,8 @@ namespace Stratego
         public Grid initialGrid;
         public Game(Player p1, Player p2)
         {
-            initPlayerPieces(p1,p2);
+            //initPlayerPieces(p1,p2);
+            //Program.setUpBoard();
             initGrid();     
         }
         private void initPlayerPieces(Player p1, Player p2)
@@ -216,7 +217,7 @@ namespace Stratego
             {
                 if(nextPiece.piecePlayer.playerType!=nowPiece.piecePlayer.playerType) // Combat???
                 {
-		    // Fix this, base on numeric values???
+            // Fix this, base on numeric values???
                     //opponent piece
                     //if flag -> win
                     if(nextPiece.pieceName==piecesTypes.Flag)return 50;
