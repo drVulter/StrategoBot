@@ -64,21 +64,21 @@ namespace Stratego
         }
 
         //we should probably move this to the Game class
-        public bool checkWin(Player player, Game state)
+        public bool checkWin(Player player)
         {
             if (player == p1)
             {
-                for (int i = 0; i < state.player2Lost.Count; i++)
+                for (int i = 0; i < player2Lost.Count; i++)
                 {
-                    if (state.player2Lost[i].pieceName.ToString() == "Flag") return true;
+                    if (player2Lost[i].pieceName.ToString() == "Flag") return true;
                 }
             }
 
             if (player == p2)
             {
-                for (int i = 0; i < state.player1Lost.Count; i++)
+                for (int i = 0; i < player1Lost.Count; i++)
                 {
-                    if (state.player1Lost[i].pieceName.ToString() == "Flag") return true;
+                    if (player1Lost[i].pieceName.ToString() == "Flag") return true;
                 }
             }
 
