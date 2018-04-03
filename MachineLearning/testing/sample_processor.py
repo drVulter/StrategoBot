@@ -22,4 +22,6 @@ x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.25, random
 # train the model
 logReg.fit(x_train, y_train)
 
+print(logReg.coef_)
+
 
