@@ -36,9 +36,10 @@ namespace Stratego
 
         public Position (int row, int col){
             //Use of possibly unassigned field error
-            int row = _row;
-            int col = _col;
-            
+            _row = 0;
+            _col = 0;
+            _row = row;
+            _col = col;
         }
 
         public static  bool operator ==(Position p1, Position p2)

@@ -11,10 +11,14 @@ namespace Stratego
         public List<Piece> player1Lost, player2Lost;
 
         public Grid initialGrid;
+        public Player p1;
+        public Player p2;
         public Game(Player p1, Player p2)
         {
             initPlayerPieces(p1,p2);
-            initGrid();     
+            initGrid();
+            this.p1 = p1;
+            this.p2 = p2;     
         }
         private void initPlayerPieces(Player p1, Player p2)
         {

@@ -12,24 +12,24 @@ namespace Stratego
             Player p1 = new Player("Red", SpaceType.Player1, PlayerColor.Red);
             Player p2 = new Player("Blue", SpaceType.Player2, PlayerColor.Blue);
             Game plop = new Game(p1,p2);
-            setUpBoard();//calls Quinn's majestic randomized setup method that I copied over from his Eval class
+            setUpBoard(p1, p2, plop);//calls Quinn's majestic randomized setup method that I copied over from his Eval class
             plop.start();
 
             while (true)
             {
                 int depth = 8;//change as needed
-                Move p1Move = alphaBetaSearch(plop, p1, p2, depth);
+                Move p1Move =  alphaBetaSearch(plop, p1, p2, depth);
                 plop.movePiece(p1Move.start, p1Move.end);
                 //update the machine learning record data on this line
-                if (plop.CheckWin(p1))
+                if (plop.checkWin(p1))
                 {
                     //update and complete this instance of the record data with the fact that p1 won this game on this line
                     break;
                 }
-                Move p2Move = alphaBetaSearch(plot, p2, p1, depth);
-                plot.movePiece(p2Move.start, p2Move.end);
+                Move p2Move = alphaBetaSearch(plop, p2, p1, depth);
+                plop.movePiece(p2Move.start, p2Move.end);
                 //update the machine learning record data on this line
-                if (plot.CheckWin(p2))
+                if (plop.checkWin(p2))
                 {
                     //update and complete this instance of the record data with the fact that p2 won this game on this line
                     break;
@@ -53,7 +53,7 @@ namespace Stratego
         }
 
         //runs minimax search with alpha-beta pruning
-        private Move alphaBetaSearch(Game state, Player max, Player min, int depth)
+        private static Move alphaBetaSearch(Game state, Player max, Player min, int depth)
         {
             double alpha = double.MinValue;
             double beta = double.MaxValue;
@@ -72,12 +72,12 @@ namespace Stratego
             return actions[bestMoveIndex];
         }
 
-        private double maxValue(Game state, Player max, Player min, double alpha, double beta, int depthFinal, int depthCurrent)
+        private static double maxValue(Game state, Player max, Player min, double alpha, double beta, int depthFinal, int depthCurrent)
         {
             Game plop = new Game(max, min);
-            if (plop.checkWin(max, state) == true)
+            if (plop.checkWin(max) == true)
                 return double.MaxValue;
-            if (plop.checkWin(min, state) == true)
+            if (plop.checkWin(min) == true)
                 return double.MinValue;
             //saving this section for the heuristic value to be calculated and returned once we hit max search depth
             if (depthFinal == depthCurrent)
@@ -97,15 +97,15 @@ namespace Stratego
             return v;
         }
 
-        private double minValue(Game state, Player max, Player min, double alpha, double beta, int depthFinal, int depthCurrent)
+        private static double minValue(Game state, Player max, Player min, double alpha, double beta, int depthFinal, int depthCurrent)
         {
             Game plop = new Game(min, max);
-            if (plop.checkWin(max, state) == true)
+            if (plop.checkWin(max) == true)
                 return double.MaxValue;
-            if (plop.checkWin(min, state) == true)
+            if (plop.checkWin(min) == true)
                 return double.MinValue;
             if (depthFinal == depthCurrent)
-                return; //evaluation function goes here
+                return 1; //evaluation function goes here
 
             double v = double.MaxValue;
             List<Move> actions = actionsForMin(state, max, min, alpha, beta, depthFinal, depthCurrent);
@@ -129,7 +129,7 @@ namespace Stratego
         //that new state is passed into the minValue method, furthering the recursion to find the actual value of
         //that potential game state. After the value of that state is determined, the move is undone so that the
         //original game object is left the same as it was before the search
-        private List<Move> actionsForMax(Game state, Player max, Player min, double alpha, double beta, int depthCurrent, int DepthFinal)
+        private static List<Move> actionsForMax(Game state, Player max, Player min, double alpha, double beta, int depthCurrent, int depthFinal)
         {
 
             List<Move> moves = new List<Move>();
@@ -154,10 +154,9 @@ namespace Stratego
                     }
                 }
             }
-
+            List<Move> actions = new List<Move>();
             //now we're going to minmax all those new potential states that we'll be in
             for (int i = 0; i < moves.Count; i++){
-                List<Move> actions = new List<Move>();
                 Game newStateNode = state;
                 newStateNode.movePiece(moves[i].start,moves[i].end);
                 double alphaNew = alpha;
@@ -173,7 +172,7 @@ namespace Stratego
         }
 
         //works the same as actionsForMax
-        private List<Move> actionsForMin(Game state, Player max, Player min, double alpha, double beta, int depthCurrent, int DepthFinal)
+        private static List<Move> actionsForMin(Game state, Player max, Player min, double alpha, double beta, int depthCurrent, int depthFinal)
         {
             List<Move> moves = new List<Move>();
             //looks through all the positions on the board
@@ -198,9 +197,9 @@ namespace Stratego
                 }
             }
 
+            List<Move> actions = new List<Move>();
             //now we're going to minmax all those new potential states that we'll be in
             for (int i = 0; i < moves.Count; i++){
-                List<Move> actions = new List<Move>();
                 Game newStateNode = state;
                 newStateNode.movePiece(moves[i].start,moves[i].end);
                 double alphaNew = alpha;
@@ -216,7 +215,7 @@ namespace Stratego
         }
 
 
-        static void setUpBoard()
+        static void setUpBoard(Player p1, Player p2, Game plop)
         {
             /* Initial Set up
                1. FLAG: goes in back two rows
