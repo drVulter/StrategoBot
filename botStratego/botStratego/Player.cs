@@ -29,6 +29,21 @@ namespace Stratego
             _playerType = playerType;
             _playerColor = playerColor;
         }
+        public static Boolean operator ==(Player p1, Player p2)
+        {
+            if (p1.name == p2.name)
+                return true;
+            else
+                return false;
+        }
+        public static Boolean operator !=(Player p1, Player p2)
+        {
+            if (p1.name == p2.name)
+                return false;
+            else
+                return true;
+        }
+
     }
 
     public enum PlayerColor { Red = 1, Blue = 2 }

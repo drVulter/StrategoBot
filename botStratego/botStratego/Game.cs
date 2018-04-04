@@ -72,18 +72,26 @@ namespace Stratego
         {
             if (player == p1)
             {
-                for (int i = 0; i < player2Lost.Count; i++)
+                try
                 {
-                    if (player2Lost[i].pieceName.ToString() == "Flag") return true;
+                    for (int i = 0; i < player2Lost.Count; i++)
+                    {
+                        if (player2Lost[i].pieceName.ToString() == "Flag") return true;
+                    }
                 }
+                catch (System.NullReferenceException) { }
             }
 
             if (player == p2)
             {
-                for (int i = 0; i < player1Lost.Count; i++)
+                try
                 {
-                    if (player1Lost[i].pieceName.ToString() == "Flag") return true;
+                    for (int i = 0; i < player1Lost.Count; i++)
+                    {
+                        if (player1Lost[i].pieceName.ToString() == "Flag") return true;
+                    }
                 }
+                catch (System.NullReferenceException) { }
             }
 
             return false;
@@ -271,8 +279,16 @@ namespace Stratego
             //add piece to lost pieces
             switch(initialGrid.mainGrid[p2.row, p2.col]._piece.piecePlayer.playerType)
             {
-                case SpaceType.Player1: break;
-                case SpaceType.Player2: break;
+                case SpaceType.Player1:
+                    {
+                        player1Lost.Add(initialGrid.mainGrid[p2.row, p2.col]._piece);
+                        break;
+                    }
+                case SpaceType.Player2:
+                    {
+                        player2Lost.Add(initialGrid.mainGrid[p2.row, p2.col]._piece);
+                        break;
+                    }
                 default: break;
             }
             initialGrid.mainGrid[p2.row, p2.col]._piece = initialGrid.mainGrid[p1.row, p1.col]._piece;
@@ -283,8 +299,16 @@ namespace Stratego
             //add piece to lost pieces
             switch (initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer.playerType)
             {
-                case SpaceType.Player1: break;
-                case SpaceType.Player2: break;
+                case SpaceType.Player1:
+                    {
+                        player1Lost.Add(initialGrid.mainGrid[p1.row, p1.col]._piece);
+                        break;
+                    }
+                case SpaceType.Player2:
+                    {
+                        player2Lost.Add(initialGrid.mainGrid[p1.row, p1.col]._piece);
+                        break;
+                    }
                 default: break;
             }
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
@@ -294,8 +318,18 @@ namespace Stratego
             //add piece to lost pieces
             switch (initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer.playerType)
             {
-                case SpaceType.Player1: break;
-                case SpaceType.Player2: break;
+                case SpaceType.Player1:
+                    {
+                        player1Lost.Add(initialGrid.mainGrid[p1.row, p1.col]._piece);
+                        player2Lost.Add(initialGrid.mainGrid[p2.row, p2.col]._piece);
+                        break;
+                    }
+                case SpaceType.Player2:
+                    {
+                        player1Lost.Add(initialGrid.mainGrid[p1.row, p1.col]._piece);
+                        player2Lost.Add(initialGrid.mainGrid[p2.row, p2.col]._piece);
+                        break;
+                    }
                 default: break;
             }
             initialGrid.mainGrid[p2.row, p2.col]._piece = null;

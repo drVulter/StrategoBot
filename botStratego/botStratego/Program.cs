@@ -17,7 +17,7 @@ namespace Stratego
 
             while (true)
             {
-                int depth = 8;//change as needed
+                int depth = 3;//change as needed
                 Move p1Move =  alphaBetaSearch(plop, p1, p2, depth);
                 plop.movePiece(p1Move.start, p1Move.end);
                 //update the machine learning record data on this line
@@ -139,19 +139,26 @@ namespace Stratego
                     Position searchPos = new Position();
                     searchPos.row = i;
                     searchPos.col = j;
-                    
+
                     //if this position holds a piece that is max's...
-                    if (state.initialGrid.grid[i,j]._piece.piecePlayer == max){//TODO: == is not defined for Player class
-                        int returncode;
-                        List<Position> posMoves = state.getMoves(searchPos, out returncode);//let's see if it has some moves
-                        if (returncode == 1){//if it's max's piece and it can move...
-                            for (int k = 0; k < posMoves.Count; k++){
-                                int z = 0;
-                                Move move = new Move(searchPos,posMoves[k],z);//we don't know the value of these moves yet but we need them, so null value
-                                moves.Add(move);//add all those moves to the total list
+                    try
+                    {
+                        if (state.initialGrid.grid[i, j]._piece.piecePlayer == max)
+                        {
+                            int returncode;
+                            List<Position> posMoves = state.getMoves(searchPos, out returncode);//let's see if it has some moves
+                            if (returncode == 1)
+                            {//if it's max's piece and it can move...
+                                for (int k = 0; k < posMoves.Count; k++)
+                                {
+                                    int z = 0;
+                                    Move move = new Move(searchPos, posMoves[k], z);//we don't know the value of these moves yet but we need them, so null value
+                                    moves.Add(move);//add all those moves to the total list
+                                }
                             }
-                        }     
+                        }
                     }
+                    catch (System.NullReferenceException) { }
                 }
             }
             List<Move> actions = new List<Move>();
@@ -181,19 +188,26 @@ namespace Stratego
                     Position searchPos = new Position();
                     searchPos.row = i;
                     searchPos.col = j;
-                    
+
                     //if this position holds a piece that is min's...
-                    if (state.initialGrid.grid[i,j]._piece.piecePlayer == min){//TODO: == is not defined for the class Player
-                        int returncode;
-                        List<Position> posMoves = state.getMoves(searchPos, out returncode);//let's see if it has some moves
-                        if (returncode == 1){//if it's min's piece and it can move...
-                            for (int k = 0; k < posMoves.Count; k++){
-                                int z = 0;
-                                Move move = new Move(searchPos,posMoves[k],z);//we don't know the value of these moves yet but we need them, so null value
-                                moves.Add(move);//add all those moves to the total list
+                    try
+                    {
+                        if (state.initialGrid.grid[i, j]._piece.piecePlayer == min)
+                        {//TODO: == is not defined for the class Player
+                            int returncode;
+                            List<Position> posMoves = state.getMoves(searchPos, out returncode);//let's see if it has some moves
+                            if (returncode == 1)
+                            {//if it's min's piece and it can move...
+                                for (int k = 0; k < posMoves.Count; k++)
+                                {
+                                    int z = 0;
+                                    Move move = new Move(searchPos, posMoves[k], z);//we don't know the value of these moves yet but we need them, so null value
+                                    moves.Add(move);//add all those moves to the total list
+                                }
                             }
-                        }     
+                        }
                     }
+                    catch (System.NullReferenceException) { }
                 }
             }
 
