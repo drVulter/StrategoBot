@@ -22,18 +22,19 @@ namespace Stratego
             plop.initialGrid.displayGrid();
             Console.WriteLine("");
             int count = 0;
-            int depth = 3;//change as needed
-            while (true)
-            //for (int i = 0; i < 5; i++)
+            int depth1 = 3;//change as needed
+            int depth2 = 2;
+            //while (true)
+            for (int i = 0; i < 5; i++)
             {
-            
-                Move p1Move =  alphaBetaSearch(plop, p1, p2, depth);
+
+                Move p1Move =  alphaBetaSearch(plop, p1, p2, depth1);
                 plop.movePiece(p1Move.start, p1Move.end);
-                //Console.WriteLine("After player 1 move");
-                //plop.initialGrid.displayGrid();
-                //Console.WriteLine("");
-                //Console.WriteLine(eval(p1,p2,plop));
-                //Console.WriteLine(eval(p2,p1,plop));
+                Console.WriteLine("After player 1 move");
+                plop.initialGrid.displayGrid();
+                Console.WriteLine("");
+                Console.WriteLine(eval(p1,p2,plop));
+                Console.WriteLine(eval(p2,p1,plop));
 
                 //update the machine learning record data on this line
 
@@ -44,16 +45,16 @@ namespace Stratego
                     //update and complete this instance of the record data with the fact that p1 won this game on this line
                     break;
                 }
-                Move p2Move = alphaBetaSearch(plop, p2, p1, depth);
+                Move p2Move = alphaBetaSearch(plop, p2, p1, depth1);
                 plop.movePiece(p2Move.start, p2Move.end);
-                //Console.WriteLine("After player 2 move");
-                //plop.initialGrid.displayGrid();
-                //Console.WriteLine("");
+                Console.WriteLine("After player 2 move");
+                plop.initialGrid.displayGrid();
+                Console.WriteLine("");
                 //Console.WriteLine(eval(p1,p2,plop));
                 //Console.WriteLine(eval(p2,p1,plop));
                 //Console.WriteLine("After player 2 move");
                 //update the machine learning record data on this line
-                
+
                 if (plop.checkWin(p2))
                 {
                     //update and complete this instance of the record data with the fact that p2 won this game on this line
@@ -63,10 +64,10 @@ namespace Stratego
                 count++;
             }
             Console.WriteLine("Done!");
-            
+
         }
-        
-        public static object DeepClone(object obj) 
+
+        public static object DeepClone(object obj)
             {
                 object objResult = null;
                 using (MemoryStream  ms = new MemoryStream())
@@ -79,7 +80,7 @@ namespace Stratego
                 }
                 return objResult;
             }
-            
+
         //encapsulates the moves within a set of actions within a state
         [Serializable]
         public class Move
@@ -174,7 +175,7 @@ namespace Stratego
             if (depthFinal == depthCurrent) {
                 //Console.WriteLine("depth reached");
                 //Console.WriteLine("min value" + eval(min,max,state));
-                return eval(max, min, state);
+                return 1.0 - eval(max, min, state);
             }
 
             double v = double.MaxValue;
@@ -195,7 +196,7 @@ namespace Stratego
         //the value of those moves involves the actions that the min player will take when given the new situation
         //caused by max's actions, creating the recursive tree. It works by first finding all the valid pieces max
         //can move, then finding all the places max can move those pieces to, and making a list of all the those
-        //begining-end moves. After attaining that information, that move is "simulated" in the newStateNode, and 
+        //begining-end moves. After attaining that information, that move is "simulated" in the newStateNode, and
         //that new state is passed into the minValue method, furthering the recursion to find the actual value of
         //that potential game state. After the value of that state is determined, the move is undone so that the
         //original game object is left the same as it was before the search
@@ -246,7 +247,7 @@ namespace Stratego
                 newStateNode.movePiece(moves[i].end, moves[i].start);
                 depthCurrent--;
             }
-            return actions;            
+            return actions;
         }
 
         //works the same as actionsForMax
@@ -296,7 +297,7 @@ namespace Stratego
                 newStateNode.movePiece(moves[i].end, moves[i].start);
                 depthCurrent--;
             }
-            return actions; 
+            return actions;
         }
         static double eval(Player playerA, Player playerB, Game plop)
         {
@@ -322,7 +323,7 @@ namespace Stratego
             double bomb = 20; // adjust
             double flag = 50; // adjust? should be arbitrarily high
             */
-            double distanceWeight = 0.0000001; // what is good value for this?
+            double distanceWeight = 0.1; // what is good value for this?
             int[] p1Totals = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // total amount of each piece type lost
             int[] p2Totals = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             int[] differences = new int[12];
@@ -379,11 +380,12 @@ namespace Stratego
                 int difference;
                 // Negative because this is based on LOST PIECES
                 // positive difference means lost more, so BAD
-                    difference = -1 * (p1Totals[i] - p2Totals[i]);
-                sum += weights[i] * difference;
+
+                difference = -1 * (p1Totals[i] - p2Totals[i]);
+                //sum += weights[i] * difference;
             }
             // subtract because we want smaller average distance
-            //sum -= distanceWeight * averageDistance(playerA, playerB);
+            //sum -= distanceWeight * averageDistance(playerA, playerB, plop);
             // or do the difference? always the same???
             //Console.WriteLine(distanceWeight * (averageDistance(playerA, playerB) - averageDistance(playerB, playerA)));
             //sum += distanceWeight * -1 * ((averageDistance(playerA, playerB) - averageDistance(playerB, playerA)));
@@ -392,19 +394,53 @@ namespace Stratego
             //sum =+ distanceWeight * -1 * ((distanceMetric(playerA, playerB) - distanceMetric(playerB, playerA)));
             //Console.WriteLine("distance metric for move by " + playerA.name);
             //Console.WriteLine(distanceWeight * distanceMetric(playerA, playerB, plop) - distanceMetric(playerB, playerA, plop));
-            //Console.WriteLine(distanceMetric(playerA, playerB, plop) - distanceMetric(playerB, playerA, plop));
+            //Console.WriteLine("value of dist metric: " + (distanceMetric(playerA, playerB, plop) - distanceMetric(playerB, playerA, plop)));
             //Console.WriteLine(distanceMetric(playerA,playerB,plop));
             //Console.WriteLine(distanceMetric(playerB,playerA,plop));
-            sum -= distanceWeight * (distanceMetric(playerA, playerB, plop) - distanceMetric(playerB, playerA, plop));
 
-            return sum;
+            // DIFFERENCE
+            sum -= distanceWeight * (distanceMetric(playerA, playerB, plop) - distanceMetric(playerB, playerA, plop));
+            // just dist metric!
+            //Console.WriteLine("before dist " + sum);
+            //sum -= distanceWeight * distanceMetric(playerA, playerB, plop);
+            //Console.WriteLine("after dist " + sum);
+            return 1.0 / (1.0 + Math.Exp(sum)); // return logistic
+            //return sum;
             } catch (System.NullReferenceException) {
                 Console.WriteLine("Eval trigger");
                 return -1 * distanceWeight * distanceMetric(playerA, playerB, plop);
             }
         }
-        
-    
+
+        static double averageDistance(Player playerA, Player playerB, Game plop)
+        {
+            /*
+              Average Manhattan Distance of all pieces belonging to playerA to playerB's flag
+            */
+            SpaceType player;
+            //if (playerA == p1) {
+                player = SpaceType.Player1;
+            //} else {
+                player = SpaceType.Player2;
+            //}
+            int total = 0; // total of all distances
+            int count = 0; // number of pieces being considered
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    if (plop.initialGrid.mainGrid[i,j]._type == player) {
+                        // need to make sure we only consider pieces that can move/capture the flag
+                        if (!((plop.initialGrid.mainGrid[i,j]._piece.pieceName == piecesTypes.Bomb) ||
+                              (plop.initialGrid.mainGrid[i,j]._piece.pieceName == piecesTypes.Flag))) {
+                            total += distance(i, j, playerB.flagPos.row, playerB.flagPos.col);
+                            count++;
+                        }
+                    }
+                }
+            }
+            return total / count; // return the average
+        }
+
+
         static int distance(int x1, int y1, int x2, int y2)
         {
                 return Math.Abs(x1 - x2) + Math.Abs(y1 - y2);
@@ -441,6 +477,7 @@ namespace Stratego
                     }
                 }
             }
+            //Console.WriteLine(total);
             return total;
         }
 
