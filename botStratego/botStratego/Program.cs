@@ -16,7 +16,8 @@ namespace Stratego
             Player p1 = new Player("P1", SpaceType.Player1, PlayerColor.Red);
             Player p2 = new Player("P2", SpaceType.Player2, PlayerColor.Blue);
             Game plop = new Game(p1,p2);
-            setUpBoard(p1, p2, plop);//calls Quinn's majestic randomized setup method that I copied over from his Eval class
+            //setUpBoard(p1, p2, plop);//calls Quinn's majestic randomized setup method that I copied over from his Eval class
+            randomBoard(p1,p2,plop);
             plop.start();
             Console.WriteLine("Here is the initial board");
             plop.initialGrid.displayGrid();
@@ -24,17 +25,16 @@ namespace Stratego
             int count = 0;
             int depth1 = 3;//change as needed
             int depth2 = 2;
-            //while (true)
-            for (int i = 0; i < 5; i++)
+            int depth = 3;
+            while (true)
+            //for (int i = 0; i < 2; i++)
             {
 
-                Move p1Move =  alphaBetaSearch(plop, p1, p2, depth1);
+                Move p1Move =  alphaBetaSearch(plop, p1, p2, depth);
                 plop.movePiece(p1Move.start, p1Move.end);
                 Console.WriteLine("After player 1 move");
                 plop.initialGrid.displayGrid();
                 Console.WriteLine("");
-                Console.WriteLine(eval(p1,p2,plop));
-                Console.WriteLine(eval(p2,p1,plop));
 
                 //update the machine learning record data on this line
 
@@ -45,15 +45,11 @@ namespace Stratego
                     //update and complete this instance of the record data with the fact that p1 won this game on this line
                     break;
                 }
-                Move p2Move = alphaBetaSearch(plop, p2, p1, depth1);
+                Move p2Move = alphaBetaSearch(plop, p2, p1, depth);
                 plop.movePiece(p2Move.start, p2Move.end);
                 Console.WriteLine("After player 2 move");
                 plop.initialGrid.displayGrid();
                 Console.WriteLine("");
-                //Console.WriteLine(eval(p1,p2,plop));
-                //Console.WriteLine(eval(p2,p1,plop));
-                //Console.WriteLine("After player 2 move");
-                //update the machine learning record data on this line
 
                 if (plop.checkWin(p2))
                 {
@@ -63,6 +59,7 @@ namespace Stratego
                 //Console.WriteLine(count);
                 count++;
             }
+            
             Console.WriteLine("Done!");
 
         }
@@ -306,28 +303,14 @@ namespace Stratego
               weighted sum of differences between the amount of each piece possessed by each player,
               and the difference between the average flag distance for each player.
               +++ Assumes playerA is MAX +++
-             */
+              */
             // First define weights
             //Getting warnings that these variables are never used, where would we be able to implement them?
-            /*
-            double marshal = 10;
-            double general = 9;
-            double colonel = 8;
-            double major = 7;
-            double captain = 6;
-            double lieutenant = 5;
-            double sergeant = 4;
-            double miner = 3; // Adjust?
-            double scout = 2;
-            double spy = 1; // adjust
-            double bomb = 20; // adjust
-            double flag = 50; // adjust? should be arbitrarily high
-            */
-            double distanceWeight = 0.1; // what is good value for this?
+            double distanceWeight = 0.000000000001; // what is good value for this?
             int[] p1Totals = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // total amount of each piece type lost
             int[] p2Totals = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
             int[] differences = new int[12];
-            double[] weights = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 20, 50 }; // adjust these weights
+            double[] weights = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 20, double.MaxValue}; // adjust these weights
 
             List<List<Piece>> pieceLists = new List<List<Piece>>();
             try {
@@ -336,7 +319,7 @@ namespace Stratego
             // count up totals
             foreach (var pieces in pieceLists)
             {
-                int[] totals = new int[12];
+                int[] totals = {0,0,0,0,0,0,0,0,0,0,0,0};
                 foreach (var piece in pieces)
                 {
                     switch (piece.pieceName)
@@ -399,10 +382,11 @@ namespace Stratego
             //Console.WriteLine(distanceMetric(playerB,playerA,plop));
 
             // DIFFERENCE
-            sum -= distanceWeight * (distanceMetric(playerA, playerB, plop) - distanceMetric(playerB, playerA, plop));
+            //sum -= distanceWeight * (distanceMetric(playerA, playerB, plop) - distanceMetric(playerB, playerA, plop));
             // just dist metric!
             //Console.WriteLine("before dist " + sum);
-            //sum -= distanceWeight * distanceMetric(playerA, playerB, plop);
+            sum -= distanceWeight * 10.0 * distanceMetric(playerA, playerB, plop);
+            //sum -= distanceWeight * averageDistance(playerA, playerB, plop);
             //Console.WriteLine("after dist " + sum);
             return 1.0 / (1.0 + Math.Exp(sum)); // return logistic
             //return sum;
@@ -480,7 +464,43 @@ namespace Stratego
             //Console.WriteLine(total);
             return total;
         }
+        static void shuffleList(List<Piece> list)
+        {
+            // method to use the Fisher-Yates algorithm to shuffle a list
+            Random rnd = new Random();
+            for (int i = list.Count - 1; i > 0; i--) {
+                int r = rnd.Next(i);
+                Piece temp = list[i];
+                list[i] = list[r];
+                list[r] = temp;
+            }
+        }
+        static void randomBoard(Player p1, Player p2, Game plop)
+        {
+            // similar to setUpBoard but TOTALLY RANDOM
 
+            // shuffle the pieces
+            shuffleList(plop.player1Pieces);
+            shuffleList(plop.player2Pieces);
+            int pieceIndex = 0; // index in piece lists
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 10; j++) {
+                    Position pos1 = new Position(i,j);
+                    Position pos2 = new Position(9 - i,9 - j);
+                    plop.setPieceOnGrid(plop.player1Pieces[pieceIndex], pos2);
+                    pieceIndex++;
+                }
+            }
+            shuffleList(plop.player2Pieces);
+            pieceIndex = 0;
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 10; j++) {
+                    plop.setPieceOnGrid(plop.player2Pieces[pieceIndex], new Position(i,j));
+                    pieceIndex++;
+                }
+            }
+
+        }
         static void setUpBoard(Player p1, Player p2, Game plop)
         {
             /* Initial Set up
