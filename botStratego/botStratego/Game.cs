@@ -1,10 +1,30 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+namespace CustomExtensions {
+    public static class Extension {
+        // change this to work for GAME not generic object
+        public static T DeepClone<T>(T obj)
+            {
+                using (var ms = new MemoryStream())
+                {
+                    var formatter = new BinaryFormatter();
+                    formatter.Serialize(ms, obj);
+                    ms.Position = 0;
 
+                    return (T) formatter.Deserialize(ms);
+                }
+            }
+    }
+}
 namespace Stratego
 {
+    using CustomExtensions;
+    [Serializable]
     public class Game
     {
         public List<Piece> player1Pieces, player2Pieces;
@@ -20,10 +40,20 @@ namespace Stratego
             this.p1 = p1;
             this.p2 = p2;     
         }
+        /*
+        public Game deepCopy()
+        {
+            Game new = (Game) this.MemberwiseClone();
+            List
+        }
+        */
         private void initPlayerPieces(Player p1, Player p2)
         {
             player1Pieces = new List<Piece>();
             player2Pieces = new List<Piece>();
+            // initialize Lost lists
+            player1Lost = new List<Piece>();
+            player2Lost = new List<Piece>();
 
             player1Pieces.Add(new Piece(piecesTypes.Marshal,p1));
             player1Pieces.Add(new Piece(piecesTypes.General, p1));
@@ -273,7 +303,11 @@ namespace Stratego
         {
             initialGrid.mainGrid[p2.row, p2.col]._piece = initialGrid.mainGrid[p1.row, p1.col]._piece;
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
+            // update player Type for grid spaces
+            initialGrid.mainGrid[p2.row, p2.col]._type = initialGrid.mainGrid[p1.row, p1.col]._type;
+            initialGrid.mainGrid[p1.row, p1.col]._type = SpaceType.Empty; // now empty
         }
+        /*
         private void updateWinGrid(Position p1, Position p2)
         {
             //add piece to lost pieces
@@ -294,6 +328,49 @@ namespace Stratego
             initialGrid.mainGrid[p2.row, p2.col]._piece = initialGrid.mainGrid[p1.row, p1.col]._piece;
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
         }
+        */
+        private void updateWinGrid(Position p1, Position p2)
+        {
+            //add piece to lost pieces
+            switch(initialGrid.mainGrid[p2.row, p2.col]._piece.piecePlayer.playerType)
+            {
+                case SpaceType.Player1:
+                    player1Lost.Add(new Piece(initialGrid.mainGrid[p2.row,p2.col]._piece.pieceName,
+                                              initialGrid.mainGrid[p2.row, p2.col]._piece.piecePlayer));
+                    break;
+                case SpaceType.Player2:
+                    player2Lost.Add(new Piece(initialGrid.mainGrid[p2.row,p2.col]._piece.pieceName,
+                                              initialGrid.mainGrid[p2.row, p2.col]._piece.piecePlayer));
+                    break;
+                default: break;
+            }
+            initialGrid.mainGrid[p2.row, p2.col]._piece = initialGrid.mainGrid[p1.row, p1.col]._piece;
+            initialGrid.mainGrid[p1.row, p1.col]._piece = null;
+            // update space type!!!
+            initialGrid.mainGrid[p2.row, p2.col]._type = initialGrid.mainGrid[p1.row, p1.col]._type;
+            initialGrid.mainGrid[p1.row, p1.col]._type = SpaceType.Empty;
+
+        }
+        private void updateLoseGrid(Position p1, Position p2)
+            {
+                //add piece to lost pieces
+                switch (initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer.playerType)
+                {
+                case SpaceType.Player1:
+                    player1Lost.Add(new Piece(initialGrid.mainGrid[p1.row,p1.col]._piece.pieceName,
+                                              initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer));
+                    break;
+                case SpaceType.Player2:
+                    player2Lost.Add(new Piece(initialGrid.mainGrid[p1.row,p1.col]._piece.pieceName,
+                                              initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer));
+                    break;
+                default: break;
+                }
+                initialGrid.mainGrid[p1.row, p1.col]._piece = null;
+                // update space type!!!
+                initialGrid.mainGrid[p1.row, p1.col]._type = SpaceType.Empty;
+            }
+        /*
         private void updateLoseGrid(Position p1, Position p2)
         {
             //add piece to lost pieces
@@ -313,6 +390,8 @@ namespace Stratego
             }
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
         }
+        */
+        /*
         private void updateTieGrid(Position p1, Position p2)
         {
             //add piece to lost pieces
@@ -334,6 +413,32 @@ namespace Stratego
             }
             initialGrid.mainGrid[p2.row, p2.col]._piece = null;
             initialGrid.mainGrid[p1.row, p1.col]._piece = null;
+        }
+        */
+        private void updateTieGrid(Position p1, Position p2)
+        {
+            //add piece to lost pieces
+            switch (initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer.playerType)
+            {
+                case SpaceType.Player1:
+                    player1Lost.Add(new Piece(initialGrid.mainGrid[p1.row,p1.col]._piece.pieceName,
+                                              initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer));
+                    player2Lost.Add(new Piece(initialGrid.mainGrid[p2.row,p2.col]._piece.pieceName,
+                                              initialGrid.mainGrid[p2.row, p2.col]._piece.piecePlayer));
+                    break;
+                case SpaceType.Player2:
+                    player2Lost.Add(new Piece(initialGrid.mainGrid[p1.row,p1.col]._piece.pieceName,
+                                              initialGrid.mainGrid[p1.row, p1.col]._piece.piecePlayer));
+                    player1Lost.Add(new Piece(initialGrid.mainGrid[p2.row,p2.col]._piece.pieceName,
+                                              initialGrid.mainGrid[p2.row, p2.col]._piece.piecePlayer));
+                    break;
+                default: break;
+            }
+            initialGrid.mainGrid[p2.row, p2.col]._piece = null;
+            initialGrid.mainGrid[p1.row, p1.col]._piece = null;
+            // update space types!!!
+            initialGrid.mainGrid[p2.row, p2.col]._type = SpaceType.Empty;
+            initialGrid.mainGrid[p1.row, p1.col]._type = SpaceType.Empty;
         }
     }
 }

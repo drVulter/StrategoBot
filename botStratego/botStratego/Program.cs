@@ -1,26 +1,44 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+
 namespace Stratego
 {
+    using CustomExtensions;
     class Program
     {
         static void Main(string[] args)
         {
-            Player p1 = new Player("Red", SpaceType.Player1, PlayerColor.Red);
-            Player p2 = new Player("Blue", SpaceType.Player2, PlayerColor.Blue);
+            Player p1 = new Player("P1", SpaceType.Player1, PlayerColor.Red);
+            Player p2 = new Player("P2", SpaceType.Player2, PlayerColor.Blue);
             Game plop = new Game(p1,p2);
             setUpBoard(p1, p2, plop);//calls Quinn's majestic randomized setup method that I copied over from his Eval class
             plop.start();
-
+            Console.WriteLine("Here is the initial board");
+            plop.initialGrid.displayGrid();
+            Console.WriteLine("");
+            int count = 0;
+            int depth = 3;//change as needed
             while (true)
+            //for (int i = 0; i < 5; i++)
             {
-                int depth = 3;//change as needed
+            
                 Move p1Move =  alphaBetaSearch(plop, p1, p2, depth);
                 plop.movePiece(p1Move.start, p1Move.end);
+                //Console.WriteLine("After player 1 move");
+                //plop.initialGrid.displayGrid();
+                //Console.WriteLine("");
+                //Console.WriteLine(eval(p1,p2,plop));
+                //Console.WriteLine(eval(p2,p1,plop));
+
                 //update the machine learning record data on this line
+
+                //view the grid
+                //Console.WriteLine("After player 1 move");
                 if (plop.checkWin(p1))
                 {
                     //update and complete this instance of the record data with the fact that p1 won this game on this line
@@ -28,16 +46,42 @@ namespace Stratego
                 }
                 Move p2Move = alphaBetaSearch(plop, p2, p1, depth);
                 plop.movePiece(p2Move.start, p2Move.end);
+                //Console.WriteLine("After player 2 move");
+                //plop.initialGrid.displayGrid();
+                //Console.WriteLine("");
+                //Console.WriteLine(eval(p1,p2,plop));
+                //Console.WriteLine(eval(p2,p1,plop));
+                //Console.WriteLine("After player 2 move");
                 //update the machine learning record data on this line
+                
                 if (plop.checkWin(p2))
                 {
                     //update and complete this instance of the record data with the fact that p2 won this game on this line
                     break;
                 }
+                //Console.WriteLine(count);
+                count++;
             }
+            Console.WriteLine("Done!");
+            
         }
+        
+        public static object DeepClone(object obj) 
+            {
+                object objResult = null;
+                using (MemoryStream  ms = new MemoryStream())
+                {
+                    BinaryFormatter  bf =   new BinaryFormatter();
+                    bf.Serialize(ms, obj);
 
+                    ms.Position = 0;
+                    objResult = bf.Deserialize(ms);
+                }
+                return objResult;
+            }
+            
         //encapsulates the moves within a set of actions within a state
+        [Serializable]
         public class Move
         {
             public Position start;
@@ -58,30 +102,52 @@ namespace Stratego
             double alpha = double.MinValue;
             double beta = double.MaxValue;
             int depthCurrent = 1;
-            List<Move> actions = actionsForMax(state, max, min, alpha, beta, depth, depthCurrent);
-            double bestMoveVal = double.MinValue;
-            int bestMoveIndex = 0;
-            for (int i = 0; i < actions.Count; i++)
-            {
-                if (actions[i].value > bestMoveVal)
+            //Console.WriteLine("alphaBetaSearch");
+            //if (max.name == "P1") {
+                List<Move> actions = actionsForMax(state, max, min, alpha, beta, depthCurrent, depth);
+                double bestMoveVal = double.MinValue;
+                int bestMoveIndex = 0;
+                for (int i = 0; i < actions.Count; i++)
                 {
-                    bestMoveVal = actions[i].value;
-                    bestMoveIndex = i;
+                    if (actions[i].value > bestMoveVal)
+                    {
+                        bestMoveVal = actions[i].value;
+                        bestMoveIndex = i;
+                    }
                 }
-            }
-            return actions[bestMoveIndex];
+                return actions[bestMoveIndex];
+                /*} else {
+                Console.WriteLine("trigger");
+                List<Move> actions = actionsForMin(state, max, min, alpha, beta, depthCurrent, depth);
+                double bestMoveVal = double.MaxValue;
+                int bestMoveIndex = 0;
+                for (int i = 0; i < actions.Count; i++)
+                {
+                    if (actions[i].value < bestMoveVal)
+                    {
+                        bestMoveVal = actions[i].value;
+                        bestMoveIndex = i;
+                    }
+                }
+
+                return actions[bestMoveIndex];
+            }*/
         }
 
-        private static double maxValue(Game state, Player max, Player min, double alpha, double beta, int depthFinal, int depthCurrent)
+        private static double maxValue(Game state, Player max, Player min, double alpha, double beta, int depthCurrent, int depthFinal)
         {
-            Game plop = new Game(max, min);
-            if (plop.checkWin(max) == true)
+            //Console.WriteLine("maxValue called");
+            //Game plop = new Game(max, min);
+            if (state.checkWin(max) == true)
                 return double.MaxValue;
-            if (plop.checkWin(min) == true)
+            if (state.checkWin(min) == true)
                 return double.MinValue;
             //saving this section for the heuristic value to be calculated and returned once we hit max search depth
-            if (depthFinal == depthCurrent)
-                return 1; //heuristicValue(state,max);
+            if (depthFinal == depthCurrent) {
+                //Console.WriteLine("max value depth reached");
+                //Console.WriteLine("max value" + eval(max,min,state));
+                return eval(max, min, state);
+            }
 
             double v = double.MinValue;
             List<Move> actions = actionsForMax(state, max, min, (double)alpha, beta, depthFinal, depthCurrent);
@@ -97,18 +163,22 @@ namespace Stratego
             return v;
         }
 
-        private static double minValue(Game state, Player max, Player min, double alpha, double beta, int depthFinal, int depthCurrent)
+        private static double minValue(Game state, Player max, Player min, double alpha, double beta, int depthCurrent, int depthFinal)
         {
-            Game plop = new Game(min, max);
-            if (plop.checkWin(max) == true)
+            //Console.WriteLine("minValue");
+            //Game plop = new Game(min, max);
+            if (state.checkWin(max) == true)
                 return double.MaxValue;
-            if (plop.checkWin(min) == true)
+            if (state.checkWin(min) == true)
                 return double.MinValue;
-            if (depthFinal == depthCurrent)
-                return 1; //evaluation function goes here
+            if (depthFinal == depthCurrent) {
+                //Console.WriteLine("depth reached");
+                //Console.WriteLine("min value" + eval(min,max,state));
+                return eval(max, min, state);
+            }
 
             double v = double.MaxValue;
-            List<Move> actions = actionsForMin(state, max, min, alpha, beta, depthFinal, depthCurrent);
+            List<Move> actions = actionsForMin(state, max, min, alpha, beta, depthCurrent, depthFinal);
             for (int i = 0; i < actions.Count; i++)
             {
                 if (actions[i].value < v)
@@ -131,6 +201,7 @@ namespace Stratego
         //original game object is left the same as it was before the search
         private static List<Move> actionsForMax(Game state, Player max, Player min, double alpha, double beta, int depthCurrent, int depthFinal)
         {
+            //Console.WriteLine("actionsForMax");
 
             List<Move> moves = new List<Move>();
             //looks through all the positions on the board
@@ -164,7 +235,7 @@ namespace Stratego
             List<Move> actions = new List<Move>();
             //now we're going to minmax all those new potential states that we'll be in
             for (int i = 0; i < moves.Count; i++){
-                Game newStateNode = state;
+                Game newStateNode = (Game)DeepClone(state);
                 newStateNode.movePiece(moves[i].start,moves[i].end);
                 double alphaNew = alpha;
                 double betaNew = beta;
@@ -207,14 +278,14 @@ namespace Stratego
                             }
                         }
                     }
-                    catch (System.NullReferenceException) { }
+                    catch (System.NullReferenceException) {/*Console.WriteLine("2nd trigger");*/ }
                 }
             }
 
             List<Move> actions = new List<Move>();
             //now we're going to minmax all those new potential states that we'll be in
             for (int i = 0; i < moves.Count; i++){
-                Game newStateNode = state;
+                Game newStateNode = (Game)DeepClone(state);
                 newStateNode.movePiece(moves[i].start,moves[i].end);
                 double alphaNew = alpha;
                 double betaNew = beta;
@@ -227,7 +298,151 @@ namespace Stratego
             }
             return actions; 
         }
+        static double eval(Player playerA, Player playerB, Game plop)
+        {
+            /*
+              EVAL() function to estimate utility
+              weighted sum of differences between the amount of each piece possessed by each player,
+              and the difference between the average flag distance for each player.
+              +++ Assumes playerA is MAX +++
+             */
+            // First define weights
+            //Getting warnings that these variables are never used, where would we be able to implement them?
+            /*
+            double marshal = 10;
+            double general = 9;
+            double colonel = 8;
+            double major = 7;
+            double captain = 6;
+            double lieutenant = 5;
+            double sergeant = 4;
+            double miner = 3; // Adjust?
+            double scout = 2;
+            double spy = 1; // adjust
+            double bomb = 20; // adjust
+            double flag = 50; // adjust? should be arbitrarily high
+            */
+            double distanceWeight = 0.0000001; // what is good value for this?
+            int[] p1Totals = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // total amount of each piece type lost
+            int[] p2Totals = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            int[] differences = new int[12];
+            double[] weights = { 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 20, 50 }; // adjust these weights
 
+            List<List<Piece>> pieceLists = new List<List<Piece>>();
+            try {
+            pieceLists.Add(plop.player1Lost);
+            pieceLists.Add(plop.player2Lost);
+            // count up totals
+            foreach (var pieces in pieceLists)
+            {
+                int[] totals = new int[12];
+                foreach (var piece in pieces)
+                {
+                    switch (piece.pieceName)
+                    {
+                        case piecesTypes.Marshal:
+                            totals[0]++; break;
+                        case piecesTypes.General:
+                            totals[1]++; break;
+                        case piecesTypes.Colonel:
+                            totals[2]++; break;
+                        case piecesTypes.Major:
+                            totals[3]++; break;
+                        case piecesTypes.Captain:
+                            totals[4]++; break;
+                        case piecesTypes.Lieutenant:
+                            totals[5]++; break;
+                        case piecesTypes.Sergeant:
+                            totals[6]++; break;
+                        case piecesTypes.Miner:
+                            totals[7]++; break;
+                        case piecesTypes.Scout:
+                            totals[8]++; break;
+                        case piecesTypes.Spy:
+                            totals[9]++; break;
+                        case piecesTypes.Bomb:
+                            totals[10]++; break;
+                        case piecesTypes.Flag:
+                            totals[11]++; break;
+                    }
+                    if (pieces == plop.player1Lost)
+                        p1Totals = totals;
+                    else
+                        p2Totals = totals;
+                }
+
+            }
+
+            double sum = 0.0;
+            for (int i = 0; i < 12; i++)
+            {
+                int difference;
+                // Negative because this is based on LOST PIECES
+                // positive difference means lost more, so BAD
+                    difference = -1 * (p1Totals[i] - p2Totals[i]);
+                sum += weights[i] * difference;
+            }
+            // subtract because we want smaller average distance
+            //sum -= distanceWeight * averageDistance(playerA, playerB);
+            // or do the difference? always the same???
+            //Console.WriteLine(distanceWeight * (averageDistance(playerA, playerB) - averageDistance(playerB, playerA)));
+            //sum += distanceWeight * -1 * ((averageDistance(playerA, playerB) - averageDistance(playerB, playerA)));
+
+            // or do we use total distances?
+            //sum =+ distanceWeight * -1 * ((distanceMetric(playerA, playerB) - distanceMetric(playerB, playerA)));
+            //Console.WriteLine("distance metric for move by " + playerA.name);
+            //Console.WriteLine(distanceWeight * distanceMetric(playerA, playerB, plop) - distanceMetric(playerB, playerA, plop));
+            //Console.WriteLine(distanceMetric(playerA, playerB, plop) - distanceMetric(playerB, playerA, plop));
+            //Console.WriteLine(distanceMetric(playerA,playerB,plop));
+            //Console.WriteLine(distanceMetric(playerB,playerA,plop));
+            sum -= distanceWeight * (distanceMetric(playerA, playerB, plop) - distanceMetric(playerB, playerA, plop));
+
+            return sum;
+            } catch (System.NullReferenceException) {
+                Console.WriteLine("Eval trigger");
+                return -1 * distanceWeight * distanceMetric(playerA, playerB, plop);
+            }
+        }
+        
+    
+        static int distance(int x1, int y1, int x2, int y2)
+        {
+                return Math.Abs(x1 - x2) + Math.Abs(y1 - y2);
+        }
+        static int distanceMetric(Player playerA, Player playerB, Game plop)
+        {
+            /*
+              sums up Manhattan distances of each players pieces to opposing player's flag
+            */
+            SpaceType player;
+            if (playerA.name == "P1")
+            {
+                player = SpaceType.Player1;
+            }
+            else
+            {
+                player = SpaceType.Player2;
+            }
+            int total = 0; // total of all distances
+            //plop.initialGrid.displayGrid();
+            for (int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    if (plop.initialGrid.mainGrid[i, j]._type == player)
+                    {
+                        // need to make sure we only consider pieces that can move/capture the flag
+                        if (!((plop.initialGrid.mainGrid[i, j]._piece.pieceName == piecesTypes.Bomb) ||
+                              (plop.initialGrid.mainGrid[i, j]._piece.pieceName == piecesTypes.Flag)))
+                        {
+                            total += distance(i, j, playerB.flagPos.row, playerB.flagPos.col);
+
+                        }
+                    }
+                }
+            }
+            return total;
+        }
 
         static void setUpBoard(Player p1, Player p2, Game plop)
         {

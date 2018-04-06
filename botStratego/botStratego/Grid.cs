@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Stratego
 {
+    [Serializable]
     public class Grid
     {
         private const int gridSize = 10;
@@ -56,7 +59,7 @@ namespace Stratego
         }
         public void displayGrid()
         {
-            for (int k = 0; k < 41; k++) {
+            for (int k = 0; k < 71; k++) {
                     Console.Write("-");
                 }
             Console.WriteLine();
@@ -66,16 +69,21 @@ namespace Stratego
                 for (int col = 0; col < gridSize; col++)
                 {
                     try { 
-                        Console.Write(grid[row, col]._piece.pieceName.ToString()[0] + " "); 
+                        //Console.Write((int)grid[row, col]._piece.pieceName + grid[row, col]._piece.piecePlayer.name + " ");
+                        Console.Write("{0,2}{1} ", (int)grid[row, col]._piece.pieceName, grid[row, col]._piece.piecePlayer.name);
                         Console.Write("| ");
                     }
                     catch { 
-                        Console.Write(grid[row, col]._type.ToString()[0] + " "); 
+                        //Console.Write(grid[row, col]._type.ToString()[0] + " ");
+                        if (!grid[row,col]._isPlayable) // this is a lake space
+                            Console.Write("   X ");
+                        else
+                            Console.Write("{0,4} ", grid[row, col]._type.ToString()[0]);
                         Console.Write("| ");
                     };
                 }
                 Console.WriteLine();
-                for (int k = 0; k < 41; k++) {
+                for (int k = 0; k < 71; k++) {
                     Console.Write("-");
                 }
                 Console.WriteLine();

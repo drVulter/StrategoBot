@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Stratego
 {
+    [Serializable]
     public class Piece
     {
         private piecesTypes _name;

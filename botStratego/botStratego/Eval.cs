@@ -11,6 +11,7 @@ namespace Stratego
         static Player p1 = new Player("P1", SpaceType.Player1, PlayerColor.Red);
         static Player p2 = new Player("P2", SpaceType.Player2, PlayerColor.Blue);
         static Game plop = new Game(p1, p2);
+        /*
         static void Main(string[] args)
         {
 
@@ -72,6 +73,7 @@ namespace Stratego
 
             //Console.ReadLine();
         }
+        */
         static double eval(Player playerA, Player playerB)
         {
             /*
