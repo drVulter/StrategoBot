@@ -19,9 +19,9 @@ namespace Stratego
             //setUpBoard(p1, p2, plop);//calls Quinn's majestic randomized setup method that I copied over from his Eval class
             randomBoard(p1,p2,plop);
             plop.start();
-            //Console.WriteLine("Here is the initial board");
-            //plop.initialGrid.displayGrid();
-            //Console.WriteLine("");
+            Console.WriteLine("Here is the initial board");
+            plop.initialGrid.displayGrid();
+            Console.WriteLine("");
             int count = 0;
             int depth1 = 3;//change as needed
             int depth2 = 2;
@@ -35,9 +35,9 @@ namespace Stratego
                 Move p1Move =  alphaBetaSearch(plop, p1, p2, depth);
                 p1Moves.Add(p1Move);
                 plop.movePiece(p1Move.start, p1Move.end);
-                //Console.WriteLine("After player 1 move");
-                //plop.initialGrid.displayGrid();
-                //Console.WriteLine("");
+                Console.WriteLine("After player 1 move");
+                plop.initialGrid.displayGrid();
+                Console.WriteLine("");
 
                 //update the machine learning record data on this line
 
@@ -51,9 +51,9 @@ namespace Stratego
                 Move p2Move = alphaBetaSearch(plop, p2, p1, depth);
                 p2Moves.Add(p2Move);
                 plop.movePiece(p2Move.start, p2Move.end);
-                //Console.WriteLine("After player 2 move");
-                //plop.initialGrid.displayGrid();
-                //Console.WriteLine("");
+                Console.WriteLine("After player 2 move");
+                plop.initialGrid.displayGrid();
+                Console.WriteLine("");
 
                 if (plop.checkWin(p2))
                 {

@@ -16,8 +16,8 @@ namespace Stratego
             Player p1 = new Player("P1", SpaceType.Player1, PlayerColor.Red);
             Player p2 = new Player("P2", SpaceType.Player2, PlayerColor.Blue);
             Game plop = new Game(p1,p2);
-            //setUpBoard(p1, p2, plop);//calls Quinn's majestic randomized setup method that I copied over from his Eval class
-            randomBoard(p1,p2,plop);
+            setUpBoard(p1, p2, plop);//calls Quinn's majestic randomized setup method that I copied over from his Eval class
+            //randomBoard(p1,p2,plop);
             plop.start();
             //Console.WriteLine("Here is the initial board");
             //plop.initialGrid.displayGrid();
