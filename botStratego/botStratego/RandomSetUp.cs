@@ -9,7 +9,7 @@ using System.Text;
 namespace Stratego
 {
     using CustomExtensions;
-    class Program
+    class RandomSetUp
     {
         static void Main(string[] args)
         {
