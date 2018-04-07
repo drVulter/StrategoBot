@@ -26,11 +26,14 @@ namespace Stratego
             int depth1 = 3;//change as needed
             int depth2 = 2;
             int depth = 3;
+            List<Move> p1Moves = new List<Move>(); // keep track of moves for each player
+            List<Move> p2Moves = new List<Move>();
             while (true)
             //for (int i = 0; i < 2; i++)
             {
 
                 Move p1Move =  alphaBetaSearch(plop, p1, p2, depth);
+                p1Moves.Add(p1Move);
                 plop.movePiece(p1Move.start, p1Move.end);
                 Console.WriteLine("After player 1 move");
                 plop.initialGrid.displayGrid();
@@ -46,6 +49,7 @@ namespace Stratego
                     break;
                 }
                 Move p2Move = alphaBetaSearch(plop, p2, p1, depth);
+                p2Moves.Add(p2Move);
                 plop.movePiece(p2Move.start, p2Move.end);
                 Console.WriteLine("After player 2 move");
                 plop.initialGrid.displayGrid();
@@ -56,14 +60,29 @@ namespace Stratego
                     //update and complete this instance of the record data with the fact that p2 won this game on this line
                     break;
                 }
+                if (count > 10) {
+                    // check for repeated moves
+                    if (checkEquilibrium(p1Moves) && checkEquilibrium(p2Moves)) {
+                        break;
+                    }
+                }
                 //Console.WriteLine(count);
-                count++;
+                count++; // increase move count
             }
             
             Console.WriteLine("Done!");
 
         }
-
+        public static bool checkEquilibrium(List<Move> moves)
+        {
+            int count = 0;
+            for (int i = moves.Count - 1; i > moves.Count - 7; i--) {
+                if ((moves[i].start == moves[moves.Count - 1].start) && (moves[i].end == moves[moves.Count - 1].end)) {
+                    count++;
+                }
+            }
+            return (count >= 3);
+        }
         public static object DeepClone(object obj)
             {
                 object objResult = null;
@@ -85,7 +104,6 @@ namespace Stratego
             public Position start;
             public Position end;
             public double value;
-
             public Move(Position start, Position end, double value)
             {
                 this.start = start;
