@@ -1,0 +1,4 @@
+The mean time is 34.2
+The standard deviation is 29.597747662054736
+The variance is 876.0266666666666
+The median is 20.5
